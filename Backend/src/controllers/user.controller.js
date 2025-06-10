@@ -39,10 +39,9 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     const user = await User.create({
-        username,
+        username: username.toLowerCase(),
         email,
         password,
-        username: username.toLowerCase(),
         role: role || "user",
     });
 
