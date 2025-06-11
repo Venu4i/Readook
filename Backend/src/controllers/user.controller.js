@@ -8,15 +8,20 @@ import mongoose, { trusted } from "mongoose";
 
 const generateAccessAndRefreshTokens = async (userId) =>{
     try {
-        const user = await User.findById(userId);
+        console.log("shuru to hua")
+        const user = await User.findById(userId)
+        if(!user){
+            console.log("user ni mila yrr")
+        }
         const accessToken = user.generateAccessToken()
         const refreshToken = user.generateRefreshToken()
 
         user.refreshToken = refreshToken
-        await user.save ({validateBeforeSave : false});
-        return { accessToken, refreshToken };
+        await user.save ({validateBeforeSave : false})
+        return { accessToken, refreshToken }
 
     } catch (error) {
+        console.log("messedup!")
         throw new ApiError (500 , "Error during generating tokens")
     }
 }
