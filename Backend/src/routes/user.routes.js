@@ -13,11 +13,11 @@ router.route("/logout").post(
     logoutUser
 )
 router.route("/refresh-token").post(refreshAccessToken)
-router.route("/change-password").post(
+router.route("/change-password").patch(
     verifyJWT,
     changePassword
 )
 router.route("/getuser").get(verifyJWT, getUser)
-router.route("/updateaddress").patch(verifyJWT, updateAddress)
+router.route("/update-address").patch(verifyJWT, updateAddress)
 
 export default router
