@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {verifyJWT} from '../middlewares/auth.middleware.js';
-import {addBook, updateBook, deleteBook} from "../controllers/book.controller.js";
+import {addBook, updateBook, deleteBook, getAllBooks} from "../controllers/book.controller.js";
 
 
 const router = Router() 
@@ -17,5 +17,7 @@ router.route("/delete-book/:id").delete(
     verifyJWT,
     deleteBook
 )
-
+router.route("/get-all-books").get(
+    getAllBooks
+)
 export default router
