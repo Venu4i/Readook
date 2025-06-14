@@ -27,15 +27,15 @@ const userSchema = new Schema({
         enum: ["user", "admin"],
     },
     favorites: [{
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Book",
     }],
     cart: [{
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Book",
     }],
     orders: [{
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Order",
     }],
     refreshToken: {

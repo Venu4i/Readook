@@ -22,6 +22,7 @@ const addBook = asyncHandler( async(req,res) =>{
                 price: req.body.price,
                 description: req.body.description,
                 language: req.body.language,
+                seller : req.user?._id //linking book to admin
             }
         )
         await book.save();

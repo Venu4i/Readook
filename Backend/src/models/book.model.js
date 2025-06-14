@@ -25,6 +25,11 @@ const bookSchema = new Schema ({
         type : String,
         required: true,
     },
+    seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // assuming admin is stored in the same User model
+    required: true
+  },
 },
 {
     timestamps: true

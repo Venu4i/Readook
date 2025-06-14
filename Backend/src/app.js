@@ -19,11 +19,13 @@ import userRouter from './routes/user.routes.js'
 import bookRouter from './routes/book.routes.js'
 import favouritesRouter from './routes/favourites.routes.js'
 import cartRouter from "./routes/cart.routes.js"
+import orderRouter from "./routes/order.routes.js"
 
 //declaration of routes
 app.use("/api/v1/user",userRouter)
 app.use("/api/v1/book", bookRouter)
 app.use("/api/v1/favourites", favouritesRouter)
 app.use("/api/v1/cart",cartRouter)
+app.use("/api/v1/order", orderRouter)
 
 export {app}
