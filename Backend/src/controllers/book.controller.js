@@ -87,9 +87,22 @@ const getAllBooks  = asyncHandler (async (_,res) => {
     }
 })
 
+const getRecentBooks = asyncHandler (async (req, res) => {
+    try {
+        const Books = await Book.find().sort({createdAt : 1}).limit(4)
+        return res.json( new ApiResponse (200, "Books fetched successfully", Books))
+    } 
+    catch (error) {
+        throw new ApiError (500, error? error : "Internal Server Error")
+    }
+})
+
+
+
 export {
     addBook,
     updateBook,
     deleteBook,
-    getAllBooks
+    getAllBooks,
+    getRecentBooks
 }
