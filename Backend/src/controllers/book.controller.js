@@ -80,7 +80,7 @@ const deleteBook = asyncHandler (async (req,res) => {
 const getAllBooks  = asyncHandler (async (_,res) => {
     try {
         const Books = await Book.find().sort({createdAt : 1})
-        return res.json( new ApiResponse (200, "Books fetched successfully", Books))
+        return res.json( new ApiResponse (200, Books, "Books fetched successfully")) //status,data,message..faced issues!!
     } 
     catch (error) {
         throw new ApiError (500, error? error : "Internal Server Error")
@@ -90,7 +90,7 @@ const getAllBooks  = asyncHandler (async (_,res) => {
 const getRecentBooks = asyncHandler (async (req, res) => {
     try {
         const Books = await Book.find().sort({createdAt : 1}).limit(4)
-        return res.json( new ApiResponse (200, "Books fetched successfully", Books))
+        return res.json( new ApiResponse (200, Books, "Books fetched successfully"))
     } 
     catch (error) {
         throw new ApiError (500, error? error : "Internal Server Error")
