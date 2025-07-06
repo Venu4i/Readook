@@ -10,6 +10,8 @@ import Login from './pages/Login.jsx'
 import SignUp from './pages/SignUp.jsx'
 import Cart from './pages/Cart.jsx'
 import Profile from './pages/Profile.jsx'
+import BookDetails from './components/ViewDetails/bookDetails.jsx'
+
 
 const App = () => {
   return (
@@ -23,6 +25,7 @@ const App = () => {
             <Route path = "/signup" element = { <SignUp /> }  />
             <Route path = "/cart" element = { <Cart /> }  />
             <Route path = "/profile" element = { <Profile /> }  />
+            <Route path = "/get-book-details/:id" element = { <BookDetails />} />
         </Routes>
       <Footer />
     </Router>

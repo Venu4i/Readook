@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import {verifyJWT} from '../middlewares/auth.middleware.js';
-import {addBook, updateBook, deleteBook, getAllBooks, getRecentBooks} from "../controllers/book.controller.js";
+import {addBook, updateBook, deleteBook,getBookbyId, getAllBooks, getRecentBooks} from "../controllers/book.controller.js";
 
 
 const router = Router() 
@@ -16,6 +16,9 @@ router.route("/update-book").patch(
 router.route("/delete-book/:id").delete(
     verifyJWT,
     deleteBook
+)
+router.route("/get-book-details/:id").get(
+    getBookbyId
 )
 router.route("/get-all-books").get(
     getAllBooks

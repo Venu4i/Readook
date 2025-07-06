@@ -97,12 +97,27 @@ const getRecentBooks = asyncHandler (async (req, res) => {
     }
 })
 
+const getBookbyId = asyncHandler (async (req,res) => {
+    try{
+        const {id} = req.params;
+        if(!id){
+            throw new ApiError (404, "Book not found")
+        }
+        const book = await Book.findById(id);
+        res.status(200).json( new ApiResponse(200, book, "Book details fetched successfully"));
+    }
+    catch(error){
+        throw new ApiError (500, error? error: "Internal Server Error")
+    }
+})
+
 
 
 export {
     addBook,
     updateBook,
     deleteBook,
+    getBookbyId,
     getAllBooks,
     getRecentBooks
 }

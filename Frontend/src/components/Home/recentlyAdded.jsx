@@ -9,13 +9,13 @@ import Loader from "../Loader/loader.jsx";
 
 
 const RecentlyAdded = () => {
-    const [Data, setData] = useState([]) ;
+    const [Data, setData] = useState(null) ;
      const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchBooks = async () => {
             try {
-                const resp = await axios.get("http://localhost:3000/api/v1/book/get-recent-books")
+                const resp = await axios.get(`http://localhost:3000/api/v1/book/get-recent-books`)
                 setData(resp.data.data)
                 
             } catch (error) {
@@ -36,7 +36,6 @@ const RecentlyAdded = () => {
                 </div>}
             <div className="my-8 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {Data && Data.length >0 && Data.map((items,i) => (
-                    console.log(items),
                     <div key = {i} >
                         <BookCard data = {items} /> {" "}
                     </div>
