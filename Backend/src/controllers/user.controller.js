@@ -50,7 +50,10 @@ const registerUser = asyncHandler(async (req, res) => {
         role: role || "user",
     });
 
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
+
     const createdUser = await User.findById(user._id).select("-password -refreshToken");
+
 
     if (!createdUser) {
         throw new ApiError(500,"Internal Server Error");

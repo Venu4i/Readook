@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 
-// import {useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,8 +14,12 @@ const Navbar = () => {
     { name: "Cart", link: "/cart" },
     { name: "Profile", link: "/profile" },
   ];
-  // const isLoggedIn =useSelector = (state) => state.auth.isLoggedIn;
+
+  const isLoggedIn =useSelector ( (state) => state.auth.isLoggedIn );
   // console.log(isLoggedIn);
+ if(isLoggedIn === false){
+  Links.splice(2,2); //from 2nd indx and quantity = 2 links 
+ }
 
   return (
     <>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { Link, useNavigate } from 'react-router-dom';
 
 
 export default function SignupPage() {
@@ -9,6 +9,8 @@ export default function SignupPage() {
     password: '',
     role: 'user' // default role
   });
+
+  const navigate = useNavigate()
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -36,11 +38,13 @@ export default function SignupPage() {
 
       const data = await res.json();
       console.log(data);
+      
 
       if (!res.ok) throw new Error(data.message || 'Signup failed');
 
       setMessage({ type: 'success', text: 'Signup successful!' });
       setForm({ username: '', email: '', password: '', role: 'user' }); // Reset
+      navigate('/login') // Redirect to login after successful signup
     } catch (err) {
       setMessage({ type: 'error', text: err.message });
     } finally {

@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+
+import { authActions } from '../store/auth.js';
+
 
 export default function LoginPage() {
   const [form, setForm] = useState({ identifier: '', password: '' });
@@ -8,6 +13,9 @@ export default function LoginPage() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,6 +39,15 @@ export default function LoginPage() {
       if (!res.ok) throw new Error(data.message || 'Login failed');
 
       setMessage({ type: 'success', text: 'Login successful!' });
+      dispatch(authActions.login()); // Update Redux state
+
+      const { user } = data.data || {};
+
+      if (user?.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
       // Optionally redirect or store token in context/state
     } catch (err) {
       setMessage({ type: 'error', text: err.message });
