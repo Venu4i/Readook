@@ -28,4 +28,18 @@ app.use("/api/v1/favourites", favouritesRouter)
 app.use("/api/v1/cart",cartRouter)
 app.use("/api/v1/order", orderRouter)
 
+app.use((err,_, res, next) => {
+  console.error("🔥 Error Handler:", err);
+
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+
+  res.status(statusCode).json({
+    success: false,
+    message,
+    errors: err.errors || [],
+    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+  });
+});
+
 export {app}

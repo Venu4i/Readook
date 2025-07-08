@@ -32,7 +32,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password, role } = req.body;
 
     if ([username, email, password, role].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "All fields are required.");
+        throw new ApiError(400,"All fields are required.");
     }
 
     const existedUser = await User.findOne({
@@ -53,11 +53,11 @@ const registerUser = asyncHandler(async (req, res) => {
     const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
     if (!createdUser) {
-        throw new ApiError(500, "Internal Server Error");
+        throw new ApiError(500,"Internal Server Error");
     }
 
     return res.status(200).json(
-        new ApiResponse(200, "User registered successfully", createdUser)
+        new ApiResponse(200, createdUser,"User registered successfully")
     );
 });
 
@@ -69,15 +69,20 @@ const loginUser = asyncHandler (async (req, res) => {
     //generate access and refresh tokens
     //send cookies
 
-    const{email, username, password} = req.body;
+    const{identifier, password} = req.body;
 
-    if(! (username ||email)) {
+    if(! (identifier)) {
         throw new ApiError (400, "Username or email is required")
     }
 
+    const normalizedIdentifier = identifier.trim().toLowerCase();
+
     const user = await User.findOne({
-        $or: [{username}, {email}]
-    })
+        $or: [
+            { username: normalizedIdentifier },
+            { email: normalizedIdentifier }
+        ]
+    });
 
     if(!user){
         throw new ApiError (404 ,"User does not exist",)
@@ -129,7 +134,7 @@ const refreshAccessToken = asyncHandler (async (req, res) => {
     const incomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken
 
     if(!incomingRefreshToken){
-        throw new ApiError(401, "unauthorised request")
+        throw new ApiError(401,"unauthorised request")
     }
     try {
         const decodedToken = jwt.verify(

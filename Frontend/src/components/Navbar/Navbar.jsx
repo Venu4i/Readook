@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 
+// import {useSelector} from "react-redux";
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -12,6 +14,8 @@ const Navbar = () => {
     { name: "Cart", link: "/cart" },
     { name: "Profile", link: "/profile" },
   ];
+  // const isLoggedIn =useSelector = (state) => state.auth.isLoggedIn;
+  // console.log(isLoggedIn);
 
   return (
     <>

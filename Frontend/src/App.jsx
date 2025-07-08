@@ -16,7 +16,6 @@ import BookDetails from './components/ViewDetails/bookDetails.jsx'
 const App = () => {
   return (
     <>
-    <Router>
       <Navbar />
         <Routes>
             <Route exact path = "/" element = { <Home /> }  />
@@ -28,7 +27,6 @@ const App = () => {
             <Route path = "/get-book-details/:id" element = { <BookDetails />} />
         </Routes>
       <Footer />
-    </Router>
     </>
   )
 }
