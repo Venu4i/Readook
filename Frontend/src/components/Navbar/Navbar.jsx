@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
+import useLogout from "../Logout.jsx"; 
 
 import {useSelector} from "react-redux";
 
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const logout = useLogout();
 
   const Links = [
     { name: "Home", link: "/" },
@@ -44,7 +47,8 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:flex gap-4">
+        {isLoggedIn === false && (
+          <div className="hidden md:flex gap-4">
           <Link
             to="/login"
             className="hover:text-white hover:bg-blue-500 transition-all duration-300 px-4 py-2 border rounded"
@@ -58,6 +62,17 @@ const Navbar = () => {
             Sign Up
           </Link>
           </div>
+          )}
+          {isLoggedIn === true && (
+          <div className="hidden md:flex gap-4">
+          <button 
+            onClick={ logout }
+            className="hover:text-white hover:bg-blue-500 transition-all duration-300 px-4 py-2 border rounded"
+          >
+            LogOut
+          </button>
+          </div>
+          )}
         </div>
 
         <button
@@ -80,7 +95,9 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
-          <Link
+          {!isLoggedIn && (
+            <div>
+            <Link
             to="/login"
             className="text-white border border-blue-400 px-4 py-2 rounded hover:bg-blue-500 transition-all duration-300"
           >
@@ -92,6 +109,18 @@ const Navbar = () => {
           >
             Sign Up
           </Link>
+          </div>
+          )}
+          {isLoggedIn && (
+            <div>
+            <button
+            onClick= {logout}
+            className="text-white border border-blue-400 px-4 py-2 rounded hover:bg-blue-500 transition-all duration-300"
+          >
+            LogOut
+          </button>
+          </div>
+          )}
         </div>
       )}
     </>

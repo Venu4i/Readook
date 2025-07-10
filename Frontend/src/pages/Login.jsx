@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-
 import { authActions } from '../store/auth.js';
-
 
 export default function LoginPage() {
   const [form, setForm] = useState({ identifier: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,28 +25,29 @@ export default function LoginPage() {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        credentials: 'include', // to send/receive cookies (accessToken, refreshToken)
+        credentials: 'include', // Important: enables cookie handling
         body: JSON.stringify(form),
       });
 
       const data = await res.json();
-      console.log(data);
-
       if (!res.ok) throw new Error(data.message || 'Login failed');
 
+      const { user, accessToken } = data.data;
+
+      // ✅ Update Redux state with token and role
+      dispatch(authActions.login({ accessToken }));
+      dispatch(authActions.changeRole(user.role));
+
       setMessage({ type: 'success', text: 'Login successful!' });
-      dispatch(authActions.login()); // Update Redux state
 
-      const { user } = data.data || {};
-
-      if (user?.role === "admin") {
-        navigate("/admin/dashboard");
+      // ✅ Redirect based on role
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard');
       } else {
-        navigate("/");
+        navigate('/');
       }
-      // Optionally redirect or store token in context/state
     } catch (err) {
       setMessage({ type: 'error', text: err.message });
     } finally {
@@ -64,7 +63,9 @@ export default function LoginPage() {
         {message.text && (
           <div
             className={`mb-4 text-sm font-medium px-4 py-2 rounded ${
-              message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+              message.type === 'error'
+                ? 'bg-red-100 text-red-700'
+                : 'bg-green-100 text-green-700'
             }`}
           >
             {message.text}
@@ -80,7 +81,7 @@ export default function LoginPage() {
             placeholder="Username or Email"
             className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
-         />
+          />
           <input
             type="password"
             name="password"

@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './App.css'
 import Navbar from './components/Navbar/Navbar.jsx'
 import Home from './pages/Home.jsx'
 import Footer from './components/Footer/Footer.jsx'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { authActions } from './store/auth.js'
 
 import Books from './pages/Books.jsx'
 import Login from './pages/Login.jsx'
@@ -14,6 +16,18 @@ import BookDetails from './components/ViewDetails/bookDetails.jsx'
 
 
 const App = () => {
+  const dispatch = useDispatch();
+  const role = useSelector((state) => state.auth.role);
+  useEffect(() => {
+    if(
+      localStorage.getItem('token') && 
+      localStorage.getItem('id') && 
+      localStorage.getItem('role')
+    ) {
+      dispatch(authActions.login());
+      dispatch(authActions.changeRole(localStorage.getItem('role')));
+    }
+  }, [])
   return (
     <>
       <Navbar />
