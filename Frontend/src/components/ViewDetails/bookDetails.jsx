@@ -1,61 +1,160 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import Loader from "../Loader/loader";
 import { GrLanguage } from "react-icons/gr";
 import { MdCurrencyRupee } from "react-icons/md";
-
-
-import { useState } from "react";
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
+import { IoCartOutline } from "react-icons/io5";
+import { TbEdit } from "react-icons/tb";
+import { MdDeleteOutline } from "react-icons/md";
+import axiosInstance from "../../store/axios";
 
 const BookDetails = () => {
-    const {id} = useParams(); // Extracting the book ID from the URL parameters
-    console.log("Book ID:",id); // debugging 
-        const [Data, setData] = useState(null) ;
-         const [error, setError] = useState(null);
-    
-        useEffect(() => {
-            const fetchBooks = async () => {
-                try {
-                    const resp = await axios.get(`http://localhost:3000/api/v1/book/get-book-details/${id}`)
-                    setData(resp.data.data)
-                    
-                } catch (error) {
-                    console.log(error)
-                    setError("Failed to load books. Please try again later.");
-                }
-            }
-            fetchBooks()
-        },[])
-    return (
-        <>
-        {Data && (
-            <div className="bg-zinc-900 flex flex-col md:flex-row  gap-8 py-8 px-5 md:px-12"  >
-            <div className="bg-zinc-800 rounded p-4 h-[60vh] md:h-[80vh] w-full lg:w-3/6 flex items-center justify-center"> 
-                 <img src = {Data.url} 
-                      alt = "Book Cover" 
-                      className="h-[50vh] lg:h-[70vh]" />
+  const { id } = useParams(); // Extract book ID from route params
+
+  const [Data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [liked, setLiked] = useState(false);
+
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const role = useSelector((state) => state.auth.role);
+
+  const headers = {
+    id: localStorage.getItem("id"),
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  };
+
+  // Fetch book details
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const resp = await axiosInstance.get(
+          `/book/get-book-details/${id}`
+        );
+        setData(resp.data.data);
+      } catch (error) {
+        console.log(error);
+        setError("Failed to load books. Please try again later.");
+      }
+    };
+
+    fetchBooks();
+  }, [id]);
+
+  // Check if already liked
+  useEffect(() => {
+    const checkFavouriteStatus = async () => {
+      try {
+        const res = await axiosInstance.get(
+          `/favourites/get-favourites`,
+          { headers }
+        );
+        console.log(res);
+        const fav= res.data.favourites || []; 
+        const favouriteIds = fav.map((item) => item._id); // Adjust if needed
+        setLiked(favouriteIds.includes(id));
+      } catch (err) {
+        console.error("Error checking favourites:", err);
+      }
+    };
+
+    if (isLoggedIn && role === "user") {
+      checkFavouriteStatus();
+    }
+  }, [id, isLoggedIn, role]);
+
+  // Toggle favourite
+  const handleFavourites = async () => {
+    try {
+      if (!liked) {
+        await axiosInstance.patch(
+          `/favourites/add-to-favourites/${id}`,
+          {},
+          { headers }
+        );
+      } else {
+        await axiosInstance.patch(
+          `/favourites/delete-from-favourites/${id}`,
+          {},
+          { headers }
+        );
+      }
+      setLiked(!liked);
+    } catch (err) {
+      console.error("Failed to update favourites:", err);
+    }
+  };
+
+  return (
+    <>
+      {Data && (
+        <div className="bg-zinc-900 flex flex-col md:flex-row gap-8 py-8 px-5 md:px-12">
+          <div className="bg-zinc-800 rounded p-4 h-[60vh] md:h-[80vh] w-full lg:w-2/6 flex items-center justify-center">
+            <img
+              src={Data.url}
+              alt="Book Cover"
+              className="h-[50vh] lg:h-[70vh]"
+            />
+          </div>
+
+          {isLoggedIn && role === "user" && (
+            <div className="flex md:flex-col gap-3">
+              <button
+                onClick={handleFavourites}
+                className="bg-white rounded-full text-2xl p-2 mt-3 md:mt-5"
+              >
+                {liked ? (
+                  <IoMdHeart className="text-red-500" />
+                ) : (
+                  <IoMdHeartEmpty />
+                )}
+              </button>
+              <button className="bg-white rounded-full text-2xl p-2 mt-3">
+                <IoCartOutline />
+              </button>
             </div>
-            <div className=" w-full lg:w-3/6 p-4 ">
-                <h2 className="text-3xl text-yellow-100 font-semibold"> {Data.title} </h2>
-                <p className="mt-1 text-zinc-400 text-xl  "> By: {Data.author} </p>
-                <p className="mt-4  text-xl text-zinc-400"> {Data.description} </p>
-                
-                <p className="mt-2 text-zinc-400 text-xl flex "><GrLanguage className="me-3 mt-1" /> {Data.language} </p>
-                <p className="mt-2 text-zinc-300 text-xl flex "> Price:<MdCurrencyRupee className=" ml-1 mt-1"/>{Data.price} </p>
-                
+          )}
+
+          {isLoggedIn && role === "admin" && (
+            <div className="flex md:flex-col gap-3">
+              <button className="bg-white rounded-full text-2xl p-2 mt-3 md:mt-5">
+                <TbEdit />
+              </button>
+              <button className="bg-white text-red-500 rounded-full text-2xl p-2 mt-3">
+                <MdDeleteOutline />
+              </button>
             </div>
+          )}
+
+          <div className="w-full lg:w-3/6 p-4">
+            <h2 className="text-3xl text-yellow-100 font-semibold">
+              {Data.title}
+            </h2>
+            <p className="mt-1 text-zinc-400 text-xl">By: {Data.author}</p>
+            <p className="mt-4 text-xl text-zinc-400">{Data.description}</p>
+
+            <p className="mt-2 text-zinc-400 text-xl flex">
+              <GrLanguage className="me-3 mt-1" /> {Data.language}
+            </p>
+            <p className="mt-2 text-zinc-300 text-xl flex">
+              Price:
+              <MdCurrencyRupee className="ml-1 mt-1" />
+              {Data.price}
+            </p>
+          </div>
         </div>
-        )}
-        {!Data && (<div className ="h-screen bg-zinc-900 flex items-center justify-center">
-            <Loader />
-            </div>)}
-        </>
-    )
+      )}
 
-}
+      {!Data && (
+        <div className="h-screen bg-zinc-900 flex items-center justify-center">
+          <Loader />
+        </div>
+      )}
+    </>
+  );
+};
 
-// export default bookDetails //must start with uppercase in jsx
-export default BookDetails
+export default BookDetails;

@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import BookCard from "../components/BookCard/BookCard.jsx";
 import Loader from "../components/Loader/loader.jsx";
+import axiosInstance from "../store/axios.js";
 
 const Books = () => {
     const [Data, setData] = useState([]) ;
@@ -14,7 +15,7 @@ const Books = () => {
     useEffect(() => {
         const fetchBooks = async () => {
             try {
-                const resp = await axios.get("http://localhost:3000/api/v1/book/get-all-books")
+                const resp = await axiosInstance.get("http://localhost:3000/api/v1/book/get-all-books")
                 setData(resp.data.data)
                 
             } catch (error) {
@@ -34,7 +35,7 @@ const Books = () => {
                 </div>}
             <div className="my-8 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-6">
                 {Data && Data.length >0 && Data.map((items,i) => (
-                    console.log(items),
+                    // console.log(items),
                     <div key = {i} >
                         <BookCard data = {items} /> {" "}
                     </div>

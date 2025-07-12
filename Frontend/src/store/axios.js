@@ -3,7 +3,7 @@ import store from "../store";
 import { authActions } from "../store/auth";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000", // update as needed
+  baseURL: "http://localhost:3000/api/v1", // update as needed
   withCredentials: true, // send cookies (refresh token)
 });
 
@@ -17,7 +17,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       try {
         // call refresh token endpoint
-        const res = await axios.get("http://localhost:8000/users/refresh-token", {
+        const res = await axios.get("http://localhost:3000/users/refresh-token", {
           withCredentials: true, // must include cookies
         });
 
