@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { useLocation } from "react-router-dom";
 import './App.css'
 import Navbar from './components/Navbar/Navbar.jsx'
 import Home from './pages/Home.jsx'
@@ -20,6 +21,7 @@ import Settings from './components/Profile/settings.jsx'
 
 const App = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const role = useSelector((state) => state.auth.role);
   useEffect(() => {
     if(
@@ -34,7 +36,7 @@ const App = () => {
   return (
     <>
       <Navbar />
-        <Routes>
+        <Routes location={location} key={location.pathname}> 
             <Route exact path = "/" element = { <Home /> }  />
             <Route path = "/books" element = { <Books /> }  />
             <Route path = "/login" element = { <Login /> }  />
@@ -46,7 +48,7 @@ const App = () => {
                 <Route path = "/profile/settings" element= { <Settings/>} />
             </Route>
 
-            <Route path = "/get-book-details/:id" element = { <BookDetails />} />
+            <Route path = "/get-book-details/:id" element = { <BookDetails   key={location.pathname} /> } />
         </Routes>
       <Footer />
     </>

@@ -4,7 +4,7 @@ import { addToCart, deleteFromCart , getCart} from "../controllers/cart.controll
 
 const router = Router()
 
-router.route("/add-to-cart/:id").put(
+router.route("/add-to-cart/:id").post(
     verifyJWT,
     addToCart
 )

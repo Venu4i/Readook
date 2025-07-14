@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -31,9 +30,7 @@ const BookDetails = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const resp = await axiosInstance.get(
-          `/book/get-book-details/${id}`
-        );
+        const resp = await axiosInstance.get(`/book/get-book-details/${id}`);
         setData(resp.data.data);
       } catch (error) {
         console.log(error);
@@ -48,14 +45,17 @@ const BookDetails = () => {
   useEffect(() => {
     const checkFavouriteStatus = async () => {
       try {
-        const res = await axiosInstance.get(
-          `/favourites/get-favourites`,
-          { headers }
-        );
-        console.log(res);
-        const fav= res.data.favourites || []; 
-        const favouriteIds = fav.map((item) => item._id); // Adjust if needed
-        setLiked(favouriteIds.includes(id));
+        setLiked(false); // Reset state
+
+        const res = await axiosInstance.get(`/favourites/get-favourites`, {
+          headers,
+        });
+        // console.log(res.data)
+
+        const fav = res.data.data || [];
+        // console.log(fav)
+        const favouriteBookIds = fav.map((item) => String(item._id));
+        setLiked(favouriteBookIds.includes(String(id)));
       } catch (err) {
         console.error("Error checking favourites:", err);
       }
@@ -88,6 +88,14 @@ const BookDetails = () => {
     }
   };
 
+  const handleCart = async () => {
+    try {
+      await axiosInstance.post(`/cart/add-to-cart/${id}`, {}, { headers });
+    } catch (err) {
+      console.error("Failed to update cart:", err);
+    }
+  };
+
   return (
     <>
       {Data && (
@@ -112,13 +120,16 @@ const BookDetails = () => {
                   <IoMdHeartEmpty />
                 )}
               </button>
-              <button className="bg-white rounded-full text-2xl p-2 mt-3">
+              <button
+                onClick={handleCart}
+                className="bg-white rounded-full text-2xl p-2 mt-3"
+              >
                 <IoCartOutline />
               </button>
             </div>
           )}
 
-          {isLoggedIn && role === "admin" && (
+          {isLoggedIn && (role === "admin" || role === "seller")&& (
             <div className="flex md:flex-col gap-3">
               <button className="bg-white rounded-full text-2xl p-2 mt-3 md:mt-5">
                 <TbEdit />

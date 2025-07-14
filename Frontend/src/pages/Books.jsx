@@ -26,14 +26,14 @@ const Books = () => {
         fetchBooks()
     },[])
     return (
-        <div className="bg-zinc-900 h-auto py-8 px-12">
+        <div className="bg-zinc-900 min-h-screen py-8 px-12">
             <h4 className="text-3xl font-semibold text-yellow-100">
                 Available Books
             </h4>
             {!Data && <div className="flex items-center justify-center my-8"> 
                     <Loader /> 
                 </div>}
-            <div className="my-8 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            <div className="my-8 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
                 {Data && Data.length >0 && Data.map((items,i) => (
                     // console.log(items),
                     <div key = {i} >

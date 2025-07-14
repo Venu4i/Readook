@@ -1,8 +1,4 @@
 import mongoose, {model, Schema} from "mongoose";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import {User} from "./user.models.js";
-import {Book} from "./book.model.js";
 
 const orderSchema = new Schema({
     user:{
@@ -13,11 +9,11 @@ const orderSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Book"
     },
-    seller: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // seller/admin
-    required: true
-   },
+//     seller: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: 'User', // seller/admin
+//     required: true
+//    },
     status:{
         type: String,
         default: "Order Placed",

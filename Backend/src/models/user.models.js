@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
+
 const userSchema = new Schema({
     username: {
         type: String,
@@ -24,16 +25,18 @@ const userSchema = new Schema({
     role: {
         type: String,
         default: "user",
-        enum: ["user", "admin"],
+        enum: ["user","admin","seller"],
     },
     favorites: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Book",
     }],
-    cart: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Book",
-    }],
+    cart: [
+    {
+        book: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
+        quantity: { type: Number, default: 1 }
+    }
+    ],
     orders: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Order",

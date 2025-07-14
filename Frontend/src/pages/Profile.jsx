@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 
 import Sidebar from "../components/Profile/Sidebar.jsx";
 import Loader from "../components/Loader/loader.jsx"
+import axiosInstance from "../store/axios.js";
 
 const Profile = () => {
     // const isLoggedIn = useSelector();
@@ -16,7 +17,7 @@ const Profile = () => {
    useEffect(() => {
   const fetchUser = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/v1/user/getuser", {
+      const response = await axiosInstance.get("/user/getuser", {
         headers,
         withCredentials: true, // as backend uses cookies
       });
@@ -38,7 +39,7 @@ const Profile = () => {
 }, []);
 
     return (
-        <div className="bg-zinc-900 text-white flex flex-col md:flex-row w-full h-screen px-2 md: px-12 py-8 gap-4">
+        <div className="bg-zinc-900 text-white flex flex-col min-h-screen md:flex-row w-full px-2 md: px-12 py-8 gap-4">
             { !Profile && (
                <div className="w-full h-[100%] flex items-center justify-center">
                   <Loader /> {" "}
@@ -46,7 +47,7 @@ const Profile = () => {
            )}
             {Profile && (
                 <>
-                <div className="w-full md:w-1/6 ">
+                <div className="w-full md:w-1/6 h-screen">
                 < Sidebar data= {Profile} />
             </div>
             <div className="w-full md:w-5/6">
