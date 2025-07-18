@@ -17,6 +17,9 @@ import BookDetails from './components/ViewDetails/bookDetails.jsx'
 import Favourites from './components/Profile/favourites.jsx'
 import Orders from './components/Profile/orders.jsx'
 import Settings from './components/Profile/settings.jsx'
+import AllOrders from './components/Profile/AllOrders.jsx';
+import AddBooks from './components/Profile/AddBook.jsx';
+import AddedBooks from './components/Profile/AddedBooks.jsx';
 
 
 const App = () => {
@@ -43,9 +46,10 @@ const App = () => {
             <Route path = "/signup" element = { <SignUp /> }  />
             <Route path = "/cart" element = { <Cart /> }  />
             <Route path = "/profile" element = { <Profile /> }>
-                <Route index element= { <Favourites />} />
-                <Route path = "/profile/orders" element= { <Orders />} />
-                <Route path = "/profile/settings" element= { <Settings/>} />
+                {role === "user" ? <Route index element= { <Favourites />} /> : <Route index element= { <AllOrders/>} />}
+                {role === "user" ? <Route path = "/profile/orders" element= { <Orders />} /> : <Route path = "/profile/addBooks" element= { <AddBooks />} />}
+                {role === "user" ? <Route path = "/profile/settings" element= { <Settings/>} /> : <Route path = "/profile/addedBooks" element= { <AddedBooks />} />}
+
             </Route>
 
             <Route path = "/get-book-details/:id" element = { <BookDetails   key={location.pathname} /> } />

@@ -16,12 +16,20 @@ const Navbar = () => {
     { name: "Books", link: "/books" },
     { name: "Cart", link: "/cart" },
     { name: "Profile", link: "/profile" },
+    { name: "Admin Profile", link: "/profile"}
   ];
 
   const isLoggedIn =useSelector ( (state) => state.auth.isLoggedIn );
+  const role = useSelector((state) => state.auth.role);
   // console.log(isLoggedIn);
  if(isLoggedIn === false){
-  Links.splice(2,2); //from 2nd indx and quantity = 2 links 
+  Links.splice(2,3); //from 2nd indx and quantity = 2 links 
+ }
+ if(isLoggedIn === true && (role === "admin" || role === "seller")){
+  Links.splice(3,1); 
+ }
+ if(isLoggedIn === true && (role === "user" )){
+  Links.splice(4,1); 
  }
 
   return (
