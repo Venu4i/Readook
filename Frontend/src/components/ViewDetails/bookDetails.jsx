@@ -91,6 +91,7 @@ const BookDetails = () => {
   const handleCart = async () => {
     try {
       await axiosInstance.post(`/cart/add-to-cart/${id}`, {}, { headers });
+      alert("Book added to cart succesfully")
     } catch (err) {
       console.error("Failed to update cart:", err);
     }

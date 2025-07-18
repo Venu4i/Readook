@@ -15,7 +15,7 @@ import Cart from './pages/Cart.jsx'
 import Profile from './pages/Profile.jsx'
 import BookDetails from './components/ViewDetails/bookDetails.jsx'
 import Favourites from './components/Profile/favourites.jsx'
-import Orders from './components/Profile/Orders.jsx'
+import Orders from './components/Profile/orders.jsx'
 import Settings from './components/Profile/settings.jsx'
 
 

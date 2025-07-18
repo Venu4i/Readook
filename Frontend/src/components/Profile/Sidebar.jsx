@@ -4,7 +4,7 @@ import logout from "../Logout";
 
 const Sidebar = ({ data }) => {
     return (
-        <div className="md:bg-zinc-800 text-white p-4 rounded-lg shadow-md flex flex-col h-full justify-between">
+        <div className="md:bg-zinc-800 text-white p-4 rounded-lg shadow-md flex flex-col h-full md:justify-between">
             <div className="flex flex-col items-center justify-center">
                 <div className="flex flex-col items-center justify-center mt-4">
                     {/* <img src={data?.profilePicture || "./default-profile.png"} alt="Profile" className="w-16 h-16 rounded-full" /> */}
