@@ -26,7 +26,7 @@ const addBook = asyncHandler( async(req,res) =>{
             }
         )
         await book.save();
-        res.status(200).json( new ApiResponse(200, "book added successfully", book))
+        res.status(200).json( new ApiResponse(200, book, "book added successfully"))
     }
      catch (error) {
         console.error("Error adding book:", error);
@@ -111,6 +111,24 @@ const getBookbyId = asyncHandler (async (req,res) => {
     }
 })
 
+const getAllBooksBySeller = asyncHandler(async (req, res) => {
+  try {
+     console.log("seller :" ,req);
+    const sellerId = req.user?._id; // assuming auth middleware sets req.user
+   
+
+    const books = await Book.find({ seller: sellerId }).sort({ createdAt: 1 });
+
+    return res.json(new ApiResponse(200, books, "Books fetched successfully"));
+  } catch (error) {
+    console.log("seller :" ,req);
+    throw new ApiError(500, error || "Internal Server Error");
+  }
+});
+
+
+
+
 
 
 export {
@@ -119,5 +137,6 @@ export {
     deleteBook,
     getBookbyId,
     getAllBooks,
-    getRecentBooks
+    getRecentBooks,
+    getAllBooksBySeller
 }
