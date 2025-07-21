@@ -1,9 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import logout from "../Logout";
+import useLogout from "../Logout.jsx";
 import { useSelector } from "react-redux";
 
 const Sidebar = ({ data }) => {
+    const logout = useLogout();
     const role = useSelector((state) => state.auth.role);
     return (
         <div className="md:bg-zinc-800 text-white p-4 rounded-lg shadow-md flex flex-col h-full md:justify-between">
@@ -94,7 +95,7 @@ const Sidebar = ({ data }) => {
             )}
 
             <button
-                onClick={logout}
+                onClick={ logout }
                 className="bg-zinc-900 hover:text-white w-full mt-6 transition-all duration-300 px-4 py-2 border rounded"
             >
                 LogOut
