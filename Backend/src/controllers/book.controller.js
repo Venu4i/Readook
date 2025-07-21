@@ -11,8 +11,8 @@ const addBook = asyncHandler( async(req,res) =>{
 
     try {
         const user= await User.findById(req.user?._id)
-        if(user.role !== "admin"){
-            throw new ApiError (403, "Only admins can add books` ")
+        if(user.role !== "admin" && user.role !== "seller"){
+            throw new ApiError (403, "Only admins/sellers can add books ")
         }
         const book = new Book(
             {
@@ -37,10 +37,12 @@ const addBook = asyncHandler( async(req,res) =>{
 const updateBook = asyncHandler (async (req, res) => {
     try {
         const user = await User.findById(req.user?._id)
-        if(user.role !== "admin"){
-            throw new ApiError (403, "Only admins can update books")
-        }
         const BookId = req.params.id;
+        const book = await Book.findById(BookId);
+        if (user.role !== "admin" && book.seller !== req.user._id) {
+        throw new ApiError(403, "Not authorized to update this book");
+        }
+        
         const updatedbook = await Book.findByIdAndUpdate(BookId, {
             url : req.body.url,
                     title : req.body.title,
@@ -49,7 +51,7 @@ const updateBook = asyncHandler (async (req, res) => {
                     description: req.body.description,
                     language: req.body.language,
         })
-        res.status(200).json(new ApiResponse (200, "Book details updated successfully", updatedbook))
+        res.status(200).json(new ApiResponse (200, updatedbook, "Book details updated successfully"))
     } catch (error) {
         throw new ApiError (500, error? error : "Internal Server error")
     }
@@ -113,22 +115,20 @@ const getBookbyId = asyncHandler (async (req,res) => {
 
 const getAllBooksBySeller = asyncHandler(async (req, res) => {
   try {
-     console.log("seller :" ,req);
-    const sellerId = req.user?._id; // assuming auth middleware sets req.user
-   
+    const sellerId = req.user?._id;
+
+    if (!sellerId) {
+      throw new ApiError(401, "Unauthorized - seller ID not found");
+    }
 
     const books = await Book.find({ seller: sellerId }).sort({ createdAt: 1 });
 
     return res.json(new ApiResponse(200, books, "Books fetched successfully"));
   } catch (error) {
-    console.log("seller :" ,req);
-    throw new ApiError(500, error || "Internal Server Error");
+    console.error("getAllBooksBySeller error:", error);
+    throw new ApiError(500, error?.message || "Internal Server Error");
   }
 });
-
-
-
-
 
 
 export {

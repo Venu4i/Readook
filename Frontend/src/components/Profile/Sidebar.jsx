@@ -54,7 +54,7 @@ const Sidebar = ({ data }) => {
                 </div>
             )}
 
-            {role === "admin" && (
+            {(role === "admin"  || role === "seller")&& (
                 <>
                 {/*user nav links */}
                 <ul className="md:space-y-4 flex flex-row md:flex-col items-center  h-full w-full mt-4">

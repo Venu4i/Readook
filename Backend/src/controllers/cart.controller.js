@@ -12,19 +12,18 @@ const addToCart = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid book ID format");
   }
 
+  const book = await Book.findById(bookId);
+  if (!book) {
+    throw new ApiError(404, "Book not found");
+  }
+
   const user = await User.findById(req.user?._id).populate("cart.book");
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
-  const book = await Book.findById(bookId);
-  if (!book) {
-    throw new ApiError(404, "Book not found");
-  }
-  console.log(user.cart)
-
   const existingCartItem = user.cart.find(
-    (item) => item.book._id.toString() === bookId
+    (item) => item.book && item.book._id.toString() === bookId
   );
 
   if (existingCartItem) {
@@ -40,6 +39,7 @@ const addToCart = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, book, "Book added to cart successfully"));
 });
 
+
 const deleteFromCart = asyncHandler(async (req, res) => {
   const bookId = req.params.id;
 
@@ -47,13 +47,13 @@ const deleteFromCart = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid book ID format");
   }
 
-  const user = await User.findById(req.user?._id).populate("cart.book");;
+  const user = await User.findById(req.user?._id).populate("cart.book");
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
   const cartItemIndex = user.cart.findIndex(
-    (item) => item.book._id.toString() === bookId
+    (item) => item.book && item.book._id.toString() === bookId
   );
 
   if (cartItemIndex === -1) {
@@ -75,25 +75,28 @@ const deleteFromCart = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, null, "Book removed from cart successfully"));
 });
 
+
 const getCart = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user?._id).populate("cart.book");
+
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
-  const booksInCart = user.cart.filter(item => item.book); // remove null refs
+  // Filter out any cart items with null books
+  const validCartItems = user.cart.filter(item => item.book);
 
-  if (booksInCart.length === 0) {
-    return res
-      .status(200)
-      .json(new ApiResponse(200, [], "Cart is empty"));
+  // Optional: Auto-remove null books from the user's cart to keep it clean
+  const invalidItems = user.cart.filter(item => !item.book);
+  if (invalidItems.length > 0) {
+    user.cart = validCartItems;
+    await user.save(); // Save the cleaned cart
   }
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, booksInCart, "Books in cart retrieved successfully")
-    );
+  return res.status(200).json(
+    new ApiResponse(200, validCartItems, "Books in cart retrieved successfully")
+  );
 });
+
 
 export { addToCart, deleteFromCart, getCart };

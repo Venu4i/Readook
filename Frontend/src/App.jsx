@@ -20,6 +20,7 @@ import Settings from './components/Profile/settings.jsx'
 import AllOrders from './components/Profile/AllOrders.jsx';
 import AddBooks from './components/Profile/AddBook.jsx';
 import AddedBooks from './components/Profile/AddedBooks.jsx';
+import EditBook from './components/Profile/EditBook.jsx';
 
 
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
             <Route path = "/login" element = { <Login /> }  />
             <Route path = "/signup" element = { <SignUp /> }  />
             <Route path = "/cart" element = { <Cart /> }  />
+            <Route path='editBook/:id' element={<EditBook />} />
             <Route path = "/profile" element = { <Profile /> }>
                 {role === "user" ? <Route index element= { <Favourites />} /> : <Route index element= { <AllOrders/>} />}
                 {role === "user" ? <Route path = "/profile/orders" element= { <Orders />} /> : <Route path = "/profile/addBooks" element= { <AddBooks />} />}

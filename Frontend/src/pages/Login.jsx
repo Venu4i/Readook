@@ -36,6 +36,9 @@ export default function LoginPage() {
 
       const { user, accessToken } = data.data;
 
+      localStorage.setItem("role", user.role); // Set during login
+      localStorage.setItem("id", user._id);
+
       // ✅ Update Redux state with token and role
       dispatch(authActions.login({ accessToken }));
       dispatch(authActions.changeRole(user.role));

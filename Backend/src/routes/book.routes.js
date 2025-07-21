@@ -9,7 +9,7 @@ router.route("/add-book").post(
     verifyJWT, 
     addBook
 )
-router.route("/update-book").patch( 
+router.route("/update-book/:id").patch( 
     verifyJWT, 
     updateBook
 )
@@ -26,7 +26,8 @@ router.route("/get-all-books").get(
 router.route("/get-recent-books").get(
     getRecentBooks
 )
-router.route("get-added-books").get(
+router.route("/get-added-books").get(
+    verifyJWT,
     getAllBooksBySeller
 )
 export default router

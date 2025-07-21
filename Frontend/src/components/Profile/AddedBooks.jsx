@@ -2,6 +2,7 @@
 import axiosInstance from "../../store/axios";
 import Loader from "../Loader/loader.jsx";
 import { NavLink } from "react-router-dom";
+import BookCard from "../BookCard/BookCard.jsx";
  
 const AddedBooks = () => {
     const [Data, setData] = useState(null) ;

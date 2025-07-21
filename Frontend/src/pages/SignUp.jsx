@@ -14,7 +14,7 @@ export default function SignupPage() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
-  const roles = ["user", "admin"];
+  const roles = ["user", "seller"];
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleChange = (e) => {

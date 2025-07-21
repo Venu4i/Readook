@@ -61,78 +61,136 @@ const placeOrder = asyncHandler(async (req, res) => {
   );
 });
 
-const getUserOrders = asyncHandler( async (req,res) => {
-    try {
-        const user = await User.findById(req.user?._id).populate({
-            path: 'orders',
-            populate: { path : 'book' } 
+const getUserOrders = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    // Find orders where this user is the buyer
+    const orders = await Order.find({ user: user._id })
+      .populate({
+        path: "book",
+        populate: {
+          path: "seller",
+          select: "name email", // Optional: display seller details
+        },
+      })
+      .sort({ createdAt: -1 }); // Show latest first
+
+    if (!orders || orders.length === 0) {
+      return res.status(200).json(new ApiResponse(200, [], "No active orders"));
+    }
+
+    return res.status(200).json(
+      new ApiResponse(200, orders, "User orders fetched successfully")
+    );
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Internal Server Error");
+  }
+});
+
+
+const getAllOrders = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    let orders = [];
+
+    if (user.role === "admin") {
+      // Admin gets all orders
+      orders = await Order.find({})
+        .populate({
+          path: "book",
+          populate: { path: "seller", select: "name email" }
         })
-        if (!user) {
-            throw new ApiError(404, "User not found");
-        }
-        const userOrders = user.orders.reverse() // Reverse to show latest orders first;
-        if (userOrders.length === 0) {
-            return res.status(200).json(new ApiResponse(200, [], "no active orders"));
-        }
-        return res.status(200).json(
-            new ApiResponse(200, userOrders, "User orders fetched successfully")
-        )
-    } 
-    catch (error) {
-        throw new ApiError(500, error ? error : "Internal Server Error")
-    }
-})
+        .populate("user")
+        .sort({ createdAt: -1 });
 
-const getAllOrders = asyncHandler(async (req,res) => {
-    try {
-        const user = await User.findById(req.user?._id);
-        if (!user) {
-            throw new ApiError(404, "User not found");
-        }
-        if(user.role !== "admin") {
-            throw new ApiError(403, "Only admins can access all orders");
-        }
-        const userData = await Order.find({ seller: req.user._id }) // 👈 only orders for this seller
-            .populate("book")
-            .populate("user")
-            .populate("seller")
-            .sort({ createdAt: -1 })
-            
-        if (!userData || userData.length === 0) {
-            return res.status(200).json(new ApiResponse(200, [], "No orders found"));
-        } 
-        return res.status(200).json(
-            new ApiResponse(200, userData, "All orders fetched successfully")
-        )
-    }
-    catch (error) {
-        throw new ApiError(500, error ? error : "Internal Server Error")
-    }
-})
+    } else if (user.role === "seller") {
+      // Seller gets orders only for their books
+      const sellerBookIds = await Book.find({ seller: user._id }).select("_id");
 
-const updateStatus = asyncHandler( async (req, res)=> {
-    try {
-        const { orderId, status } = req.body;
-        if (!orderId || !status) {
-            throw new ApiError(400, "Order ID and status are required");
-        }
-        if (!mongoose.Types.ObjectId.isValid(orderId)) {
-            throw new ApiError(400, "Invalid order ID format");
-        }
-        const order = await Order.findById(orderId);
-        if (!order) {
-            throw new ApiError(404, "Order not found");
-        }
-        order.status = status;
-        await order.save();
-        return res.status(200).json(
-            new ApiResponse(200, order, "Order status updated successfully")
-        )
-    } 
-    catch (error) {
-        throw new ApiError(500, error ? error : "Internal Server Error")
+      orders = await Order.find({ book: { $in: sellerBookIds } })
+        .populate({
+          path: "book",
+          populate: { path: "seller", select: "name email" }
+        })
+        .populate("user")
+        .sort({ createdAt: -1 });
+
+    } else {
+      throw new ApiError(403, "Only sellers and admins can access this route");
     }
-})
+
+    return res.status(200).json(
+      new ApiResponse(200, orders, "Orders fetched successfully")
+    );
+  } catch (error) {
+    console.error("getAllOrders error:", error);
+    throw new ApiError(500, error?.message || "Internal Server Error");
+  }
+});
+
+
+
+const updateStatus = asyncHandler(async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+
+    if (!orderId || !status) {
+      throw new ApiError(400, "Order ID and status are required");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      throw new ApiError(400, "Invalid order ID format");
+    }
+
+    const userId = req.user?._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const order = await Order.findById(orderId).populate({
+      path: "book",
+      populate: {
+        path: "seller",
+        select: "_id name email",
+      },
+    });
+
+    if (!order) {
+      throw new ApiError(404, "Order not found");
+    }
+
+    // Check if current user is either admin or the seller of the book
+    const isAdmin = user.role === "admin";
+    const isSellerOfBook =
+      order.book &&
+      order.book.seller &&
+      order.book.seller._id.toString() === userId.toString();
+
+    if (!isAdmin && !isSellerOfBook) {
+      throw new ApiError(403, "You are not authorized to update this order");
+    }
+
+    order.status = status;
+    await order.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, order, "Order status updated successfully"));
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Internal Server Error");
+  }
+});
+
 
 export {
     placeOrder,

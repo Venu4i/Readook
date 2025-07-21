@@ -107,15 +107,18 @@ const Cart = () => {
       {cart && cart.length > 0 && (
         <>
           <div className="my-8 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-            {cart.map((item, i) => (
-              <div key={i}>
-                <BookCard
-                  data={item}
-                  incart={true}
-                  onCartRemoved={fetchCart}
-                />
-              </div>
-            ))}
+            {cart.map((item, i) =>
+              item.book && (
+                <div key={i}>
+                  <BookCard
+                    data={item}
+                    incart={true}
+                    onCartRemoved={fetchCart}
+                  />
+                </div>
+              )
+            )}
+
           </div>
 
           {/* ✅ Wrap Place Order section only when cart is not empty */}

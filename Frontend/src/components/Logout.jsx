@@ -9,26 +9,22 @@ export default function useLogout() {
 
   const handleLogout = async () => {
     try {
-      const res = await axiosInstance.post('/user/logout', {
-        credentials: 'include',
+      // Call logout API
+      await axiosInstance.post('/user/logout', null, {
+        withCredentials: true, // if cookies are used
       });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Logout failed');
-      }
-      else{
 
       // Clear Redux state
       dispatch(authActions.logout());
       dispatch(authActions.changeRole(null));
 
+      // Clear localStorage (optional but common)
+      localStorage.clear();
+
       // Redirect to login or homepage
       navigate('/');
-      }
-      
     } catch (err) {
-      console.error('Logout error:', err.message);
+      console.error('Logout error:', err?.response?.data?.message || err.message);
     }
   };
 

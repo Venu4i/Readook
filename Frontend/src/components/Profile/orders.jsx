@@ -55,45 +55,54 @@ const Orders = () => {
             <div className="w-[5%] text-center font-semibold hidden md:block">Mode</div>
           </div>
 
-          {orders.map((items, i) => (
-            <div
-              key={items._id}
-              className="bg-zinc-800 w-full rounded py-2 px-4 flex gap-4 hover:bg-zinc-900 cursor-pointer"
-            >
-              <div className="w-[3%] text-center">{i + 1}</div>
+{orders.map((items, i) => {
+  if (!items.book) return null; // Skip if book is missing
 
-              <div className="w-[22%] text-center">
-                <Link
-                  to={`/get-book-details/${items.book._id}`}
-                  className="hover:text-blue-300"
-                >
-                  {items.book.title}
-                </Link>
-              </div>
+  return (
+    <div
+      key={items._id}
+      className="bg-zinc-800 w-full rounded py-2 px-4 flex gap-4 hover:bg-zinc-900 cursor-pointer"
+    >
+      <div className="w-[3%] text-center">{i + 1}</div>
 
-              <div className="w-[45%] text-center">
-                {items.book.description.slice(0, 50)}...
-              </div>
+      <div className="w-[22%] text-center">
+        <Link
+          to={`/get-book-details/${items.book._id}`}
+          className="hover:text-blue-300"
+        >
+          {items.book.title}
+        </Link>
+      </div>
 
-              <div className="w-[9%] text-center">
-                ₹ {items.book.price}
-              </div>
+      <div className="w-[45%] text-center">
+        {items.book.description?.slice(0, 50)}...
+      </div>
 
-              <div className="w-[16%] text-center font-semibold">
-                {items.status === "Order Placed" ? (
-                  <span className="text-yellow-500">{items.status}</span>
-                ) : items.status === "Cancelled" ? (
-                  <span className="text-red-500">{items.status}</span>
-                ) : (
-                  <span>{items.status}</span>
-                )}
-              </div>
+      <div className="w-[9%] text-center">
+        ₹ {items.book.price}
+      </div>
 
-              <div className="w-[5%] text-center hidden md:block text-sm text-zinc-400">
-                COD
-              </div>
-            </div>
-          ))}
+      <div className="w-[16%] text-center font-semibold">
+        {items.status === "Order Placed" ? (
+          <span className="text-yellow-500">{items.status}</span>
+        ) : items.status === "Cancelled" ? (
+          <span className="text-red-500">{items.status}</span>
+        ) : items.status === "out for delivery" ? (
+          <span className="text-blue-400 capitalize">{items.status}</span>
+        ) : items.status === "delivered" ? (
+          <span className="text-green-400 capitalize">{items.status}</span>
+        ) : (
+          <span>{items.status}</span>
+        )}
+      </div>
+
+      <div className="w-[5%] text-center hidden md:block text-sm text-zinc-400">
+        COD
+      </div>
+    </div>
+  );
+})}
+
         </div>
       )}
     </>
