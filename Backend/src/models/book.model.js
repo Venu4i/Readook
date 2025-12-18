@@ -29,6 +29,24 @@ const bookSchema = new Schema ({
         type : String,
         required: true,
     },
+    totalStars:{
+        type: Number,
+        default : 0,
+    },
+    numberOfReviews:{
+        type: Number,
+        default : 0,
+    },
+    rating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
+    },
+    category: {
+        type: String,
+        required: true
+    },
     seller: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', // assuming admin is stored in the same User model

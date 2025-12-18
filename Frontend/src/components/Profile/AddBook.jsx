@@ -12,6 +12,7 @@ const AddBooks = () => {
     price: "",
     description: "",
     language: "",
+    category: "",
   });
 
   const headers = {
@@ -100,6 +101,16 @@ const AddBooks = () => {
           type="text"
           name="language"
           value={form.language}
+          onChange={handleChange}
+          className="w-full mb-6 p-2 rounded bg-zinc-700 text-white"
+          required
+        />
+
+        <label className="block mb-2">Category</label>
+        <input
+          type="text"
+          name="category"
+          value={form.category}
           onChange={handleChange}
           className="w-full mb-6 p-2 rounded bg-zinc-700 text-white"
           required

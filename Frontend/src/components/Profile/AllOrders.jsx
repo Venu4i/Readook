@@ -36,29 +36,41 @@ const AllOrders = () => {
     fetchOrders();
   }, []);
 
-  const handleStatusChange = async (orderId, newStatus) => {
-    try {
-      setUpdating(true);
-      await axiosInstance.patch(
-        "/order/update-status",
-        { orderId, status: newStatus },
-        { headers }
-      );
+const handleStatusChange = async (orderId, newStatus) => {
+  try {
+    let verificationCode = "";
 
-      // Refresh the orders
-      const res = await axiosInstance.get("/order/get-all-orders", { headers });
-      const validOrders = res.data.data
-        .filter((order) => order.book && order.user)
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-      setOrders(validOrders);
-    } catch (err) {
-      console.error("Failed to update status", err);
-      alert("Error updating status");
-    } finally {
-      setUpdating(false);
+    // If marking as delivered, ask for the code
+    if (newStatus === "delivered") {
+      verificationCode = window.prompt("Enter the 6-digit Delivery Code provided by the customer:");
+      
+      if (!verificationCode) {
+        alert("Action cancelled. Delivery code is required to mark as delivered.");
+        return;
+      }
     }
-  };
+
+    setUpdating(true);
+    await axiosInstance.patch(
+      "/order/update-status",
+      { orderId, status: newStatus, deliveryCode: verificationCode }, // Send code in payload
+      { headers }
+    );
+
+    // Refresh the orders
+    const res = await axiosInstance.get("/order/get-all-orders", { headers });
+    const validOrders = res.data.data
+      .filter((order) => order.book && order.user)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    setOrders(validOrders);
+  } catch (err) {
+    console.error("Failed to update status", err);
+    alert(err.response?.data?.message || "Error updating status");
+  } finally {
+    setUpdating(false);
+  }
+};
 
   return (
     <>

@@ -4,6 +4,7 @@ import { Book } from '../models/book.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import {asyncHandler} from '../utils/asyncHandler.js';
+import { getRecommendedBooks } from '../utils/recommendation.js';
 
 const addBook = asyncHandler( async(req,res) =>{
     //get book details
@@ -22,7 +23,9 @@ const addBook = asyncHandler( async(req,res) =>{
                 price: req.body.price,
                 description: req.body.description,
                 language: req.body.language,
-                seller : req.user?._id //linking book to admin
+                seller : req.user?._id ,//linking book to seller
+                quantity:req.body.quantity,
+                category : req.body.category,
             }
         )
         await book.save();
@@ -79,15 +82,65 @@ const deleteBook = asyncHandler (async (req,res) => {
 
 })
 
-const getAllBooks  = asyncHandler (async (_,res) => {
+const getAllBooks = asyncHandler(async (req, res) => {
     try {
-        const Books = await Book.find().sort({createdAt : 1})
-        return res.json( new ApiResponse (200, Books, "Books fetched successfully")) //status,data,message..faced issues!!
-    } 
-    catch (error) {
-        throw new ApiError (500, error? error : "Internal Server Error")
+        const userId = req.user?._id;
+        let finalBooks = [];
+
+        console.log("Entered getAllBooks")
+
+        // 1. Try to get personalized recommendations if user is logged in
+        if (userId) {
+            const user = await User.findById(userId);
+            
+            // Note: Mongoose Maps use .size to check length
+            if (user && user.interestProfile?.categories?.size > 0) {
+                const recommended = await getRecommendedBooks(user);
+                
+                // Get IDs of recommended books to exclude them from the "others" list
+                const recommendedIds = recommended.map(b => b._id.toString());
+
+                // Find other books, excluding favorites and already recommended ones
+                const others = await Book.find({ 
+                    _id: { $nin: [...user.favorites, ...recommendedIds] } 
+                }).sort({ rating: -1, createdAt: -1 });
+
+                // Merge: Recommendations always come first
+                finalBooks = [...recommended, ...others];
+
+                console.log("--- Recommendation Debug ---");
+                console.log("User Categories:", user.interestProfile.categories);
+                console.log("First Book Score:", finalBooks[0]?.title, "Score:", finalBooks[0]?.score);
+                console.log("Total Books being sent:", finalBooks.length);
+            }
+        }
+
+        // 2. Cold Start / Guest User / No Interests yet
+        if (finalBooks.length === 0) {
+            finalBooks = await Book.find()
+                .sort({ rating: -1, createdAt: -1 });
+        }
+
+        
+
+        return res.json(new ApiResponse(200, finalBooks, "Books fetched successfully"));
+    } catch (error) {
+        console.error("Error in getAllBooks:", error);
+        throw new ApiError(500, error?.message || "Internal Server Error");
     }
-})
+});
+
+const fetchRecommendations = asyncHandler(async (req, res) => {
+    try {
+        const user = await User.findById(req.user?._id);
+        if (!user) throw new ApiError(404, "User not found");
+
+        const recommendations = await getRecommendedBooks(user);
+        return res.json(new ApiResponse(200, recommendations, "Recommendations fetched successfully"));
+    } catch (error) {
+        throw new ApiError(500, error?.message || "Internal Server Error");
+    }
+});
 
 const getRecentBooks = asyncHandler (async (req, res) => {
     try {
@@ -130,7 +183,6 @@ const getAllBooksBySeller = asyncHandler(async (req, res) => {
   }
 });
 
-
 export {
     addBook,
     updateBook,
@@ -138,5 +190,6 @@ export {
     getBookbyId,
     getAllBooks,
     getRecentBooks,
-    getAllBooksBySeller
+    getAllBooksBySeller,
+    fetchRecommendations
 }

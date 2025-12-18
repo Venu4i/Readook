@@ -7,17 +7,14 @@ import { Book } from "../models/book.model.js"
 import { Order } from "../models/order.models.js"
 
 const placeOrder = asyncHandler(async (req, res) => {
-  const { orderData } = req.body; // this is the full cart: [{ book, quantity }, ...]
+  const { orderData } = req.body;
 
   if (!Array.isArray(orderData) || orderData.length === 0) {
     throw new ApiError(400, "Order data must be a non-empty array");
   }
 
   const user = await User.findById(req.user?._id);
-
-  if (!user) {
-    throw new ApiError(404, "User not found");
-  }
+  if (!user) throw new ApiError(404, "User not found");
 
   const createdOrders = [];
 
@@ -25,7 +22,6 @@ const placeOrder = asyncHandler(async (req, res) => {
     const bookId = item.book._id ? item.book._id : item.book;
     const quantity = item.quantity || 1;
 
-    // Check if book is still in the user's cart
     const isInCart = user.cart.some(
       (cartItem) => cartItem.book.toString() === bookId.toString()
     );
@@ -35,30 +31,28 @@ const placeOrder = asyncHandler(async (req, res) => {
     const book = await Book.findById(bookId);
     if (!book) continue;
 
+    // GENERATE RANDOM 6-DIGIT CODE
+    const deliveryCode = Math.floor(100000 + Math.random() * 900000).toString();
+
     const newOrder = new Order({
       book: bookId,
       user: user._id,
       seller: book.seller,
-      quantity, // only if Order model has quantity field
+      quantity,
+      deliveryCode: deliveryCode // Save the code
     });
 
     await newOrder.save();
     createdOrders.push(newOrder);
 
-    // Add to user's orders
     user.orders.push(newOrder._id);
-
-    // Remove from cart
     user.cart = user.cart.filter(
       (cartItem) => cartItem.book.toString() !== bookId.toString()
     );
   }
 
   await user.save();
-
-  return res.status(201).json(
-    new ApiResponse(201, createdOrders, "Order(s) placed successfully")
-  );
+  return res.status(201).json(new ApiResponse(201, createdOrders, "Order(s) placed successfully"));
 });
 
 const getUserOrders = asyncHandler(async (req, res) => {
@@ -140,7 +134,7 @@ const getAllOrders = asyncHandler(async (req, res) => {
 
 const updateStatus = asyncHandler(async (req, res) => {
   try {
-    const { orderId, status } = req.body;
+    const { orderId, status, deliveryCode } = req.body; // Receive deliveryCode from frontend
 
     if (!orderId || !status) {
       throw new ApiError(400, "Order ID and status are required");
@@ -151,43 +145,37 @@ const updateStatus = asyncHandler(async (req, res) => {
     }
 
     const userId = req.user?._id;
-
     const user = await User.findById(userId);
-    if (!user) {
-      throw new ApiError(404, "User not found");
-    }
+    if (!user) throw new ApiError(404, "User not found");
 
     const order = await Order.findById(orderId).populate({
       path: "book",
-      populate: {
-        path: "seller",
-        select: "_id name email",
-      },
+      populate: { path: "seller", select: "_id name email" },
     });
 
-    if (!order) {
-      throw new ApiError(404, "Order not found");
-    }
+    if (!order) throw new ApiError(404, "Order not found");
 
-    // Check if current user is either admin or the seller of the book
+    // AUTH CHECK
     const isAdmin = user.role === "admin";
-    const isSellerOfBook =
-      order.book &&
-      order.book.seller &&
-      order.book.seller._id.toString() === userId.toString();
+    const isSellerOfBook = order.book?.seller?._id.toString() === userId.toString();
 
     if (!isAdmin && !isSellerOfBook) {
       throw new ApiError(403, "You are not authorized to update this order");
     }
 
+    // VERIFICATION CHECK: Only for 'delivered' status
+    if (status === "delivered") {
+      if (!deliveryCode || order.deliveryCode !== deliveryCode) {
+        throw new ApiError(400, "Incorrect delivery verification code provided");
+      }
+    }
+
     order.status = status;
     await order.save();
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, order, "Order status updated successfully"));
+    return res.status(200).json(new ApiResponse(200, order, "Order status updated successfully"));
   } catch (error) {
-    throw new ApiError(500, error?.message || "Internal Server Error");
+    throw new ApiError(error.statusCode || 500, error?.message || "Internal Server Error");
   }
 });
 

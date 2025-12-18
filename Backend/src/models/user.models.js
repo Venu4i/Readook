@@ -31,6 +31,10 @@ const userSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Book",
     }],
+    interestProfile: {
+       categories: { type: Map, of: Number, default: {} },
+       authors: { type: Map, of: Number, default: {} }
+    },
     cart: [
     {
         book: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },

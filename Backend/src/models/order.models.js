@@ -14,11 +14,24 @@ const orderSchema = new Schema({
 //     ref: 'User', // seller/admin
 //     required: true
 //    },
+    isRated: {
+        type: Boolean,
+        default: false
+    },
+    ratingGiven: {
+        type: Number,
+        default: 0
+    },
     status:{
         type: String,
         default: "Order Placed",
         enum : ["Order Placed","out for delivery","delivered", "Cancelled"],
     },
+    deliveryCode: {
+        type: String,
+        required: true
+        // generate this during order placement
+    }
 },
 {
     timestamps : true 

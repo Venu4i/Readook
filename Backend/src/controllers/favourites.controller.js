@@ -30,12 +30,29 @@ const addToFavourites = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Book is already in favourites");
   }
 
-  user.favorites.push(bookId);
+  try {
+    user.favorites.push(bookId);
+  // Normalize the category name to "Title Case" or "lowercase" before saving
+const categoryKey = book.category.trim(); // "Self-Help"
+
+// Always check for existing variations or just force one format
+const currentWeight = user.interestProfile.categories.get(categoryKey) || 0;
+user.interestProfile.categories.set(categoryKey, currentWeight + 2);
+
+    // Update Author Weights
+    const currentAuthWeight = user.interestProfile.authors.get(book.author) || 0;
+    user.interestProfile.authors.set(book.author, currentAuthWeight + 1);
+
+
   await user.save();
 
   return res
     .status(200)
     .json(new ApiResponse(200, book, "Book added to favourites successfully"));
+  } 
+  catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 const deleteFromfavourites = asyncHandler(async (req, res) => {

@@ -11,18 +11,28 @@ const Books = () => {
   const [searchTitle, setSearchTitle] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("");
 
-  useEffect(() => {
+useEffect(() => {
     const fetchBooks = async () => {
       try {
+        const token = localStorage.getItem("token");
+        
+        // Define configuration. If token exists, add it to headers.
+        const config = token 
+          ? { headers: { Authorization: `Bearer ${token}` } } 
+          : {};
+
         const resp = await axiosInstance.get(
-          "http://localhost:3000/api/v1/book/get-all-books"
+          "http://localhost:3000/api/v1/book/get-all-books",
+          config // Pass the config here
         );
+
         setData(resp.data.data);
       } catch (error) {
-        console.log(error);
+        console.log("Error fetching books:", error);
         setError("Failed to load books. Please try again later.");
       }
     };
+    
     fetchBooks();
   }, []);
 
