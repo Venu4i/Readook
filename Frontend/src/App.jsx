@@ -12,6 +12,7 @@ import Books from './pages/Books.jsx'
 import Login from './pages/Login.jsx'
 import SignUp from './pages/SignUp.jsx'
 import Cart from './pages/Cart.jsx'
+import Stats from './pages/Stats.jsx'
 import Profile from './pages/Profile.jsx'
 import BookDetails from './components/ViewDetails/bookDetails.jsx'
 import Favourites from './components/Profile/favourites.jsx'
@@ -21,22 +22,26 @@ import AllOrders from './components/Profile/AllOrders.jsx';
 import AddBooks from './components/Profile/AddBook.jsx';
 import AddedBooks from './components/Profile/AddedBooks.jsx';
 import EditBook from './components/Profile/EditBook.jsx';
+import ManageSellers from './components/Profile/ManageSellers.jsx';
 
 
 const App = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const role = useSelector((state) => state.auth.role);
+  
   useEffect(() => {
-    if(
-      localStorage.getItem('token') && 
-      localStorage.getItem('id') && 
-      localStorage.getItem('role')
-    ) {
-      dispatch(authActions.login());
-      dispatch(authActions.changeRole(localStorage.getItem('role')));
-    }
-  }, [])
+        const token = localStorage.getItem('token');
+        const id = localStorage.getItem('id');
+        const role = localStorage.getItem('role');
+
+        if (token && id && role) {
+          // Pass the token as a payload so Redux state.accessToken is set!
+          dispatch(authActions.login({ accessToken: token })); 
+          dispatch(authActions.changeRole(role));
+        }
+  }, [dispatch]);
+  
   return (
     <>
       <Navbar />
@@ -46,11 +51,13 @@ const App = () => {
             <Route path = "/login" element = { <Login /> }  />
             <Route path = "/signup" element = { <SignUp /> }  />
             <Route path = "/cart" element = { <Cart /> }  />
+            <Route path = "/admin-stats" element = { <Stats /> }  />
             <Route path='editBook/:id' element={<EditBook />} />
             <Route path = "/profile" element = { <Profile /> }>
                 {role === "user" ? <Route index element= { <Favourites />} /> : <Route index element= { <AllOrders/>} />}
                 {role === "user" ? <Route path = "/profile/orders" element= { <Orders />} /> : <Route path = "/profile/addBooks" element= { <AddBooks />} />}
                 {role === "user" ? <Route path = "/profile/settings" element= { <Settings/>} /> : <Route path = "/profile/addedBooks" element= { <AddedBooks />} />}
+                {role === "admin" && <Route path="manage-sellers" element={<ManageSellers />} />}
 
             </Route>
 

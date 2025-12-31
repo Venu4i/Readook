@@ -17,6 +17,15 @@ const addToCart = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Book not found");
   }
 
+  // 2. CHECK: Is the seller of this book blacklisted?
+  // We access book.seller because it's populated from the User model
+  if (book.seller && book.seller.isBlacklisted) {
+    throw new ApiError(
+      403, 
+      "This seller is currenlt unavailable."
+    );
+  }
+
   const user = await User.findById(req.user?._id).populate("cart.book");
   if (!user) {
     throw new ApiError(404, "User not found");

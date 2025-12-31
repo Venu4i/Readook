@@ -91,6 +91,10 @@ const loginUser = asyncHandler (async (req, res) => {
         throw new ApiError (404 ,"User does not exist",)
     }
 
+    if (user && user.role === "seller" && user.isBlacklisted) {
+    throw new ApiError(403, "Your account has been blacklisted due to complaints. Access denied.");
+    }
+
     const isPasswordValid = await user.isPasswordCorrect(password)
 
     if (!isPasswordValid){

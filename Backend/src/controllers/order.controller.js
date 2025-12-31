@@ -130,8 +130,6 @@ const getAllOrders = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 const updateStatus = asyncHandler(async (req, res) => {
   try {
     const { orderId, status, deliveryCode } = req.body; // Receive deliveryCode from frontend

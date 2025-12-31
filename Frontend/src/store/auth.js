@@ -3,9 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    isLoggedIn: false,
-    role: "user",
-    accessToken: null,
+    // DO NOT start at false/null. Read from storage immediately.
+    isLoggedIn: !!localStorage.getItem("id"), 
+    role: localStorage.getItem("role") || "user",
+    accessToken: localStorage.getItem("token") || null,
   },
   reducers: {
     login(state, action) {
