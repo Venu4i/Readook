@@ -59,7 +59,7 @@ The engine dynamically generates a personalized feed by filtering out books alre
 
 1. **Clone the repo:**
    ```bash
-   git clone [https://github.com/Venu4i/readook.git](https://github.com/Venu4i/readook.git)
+   git clone [https://github.com/Venu4i/Readook.git](https://github.com/Venu4i/Readook.git)
 
 # Navigate to backend
 cd backend
