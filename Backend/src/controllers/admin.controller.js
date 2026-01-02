@@ -12,7 +12,6 @@ const getAdminDashboardData = asyncHandler(async (req, res) => {
 
     try {
         // 1. Fetch Basic Counts
-        // We count users and sellers based on the 'role' enum in your User model
         const [totalBooks, totalUsers, totalSellers, totalOrders] = await Promise.all([
             Book.countDocuments(),
             User.countDocuments({ role: "user" }),
@@ -39,29 +38,33 @@ const getAdminDashboardData = asyncHandler(async (req, res) => {
         }));
 
         // 3. Get Recent Activity
-        // Using 'user' and 'book' refs from your Order model
-        const recentOrders = await Order.find()
-            .populate("user", "username email") // matches your orderSchema field 'user'
-            .populate("book", "title price url") // matches your orderSchema field 'book'
-            .limit(5)
-            .sort({ createdAt: -1 });
+        // ✅ FIX: Populate 'user', but handle 'book' manually to include snapshots
+        const ordersFromDb = await Order.find()
+            .populate("user", "username email")
+            .sort({ createdAt: -1 })
+            .limit(10);
 
-        // 4. Calculate Total Revenue (Optional but great for dashboards)
-        // Since price is in the Book model, we lookup the book price for each order
+        const recentOrders = ordersFromDb.map(order => {
+            const orderObj = order.toObject();
+            // If the book ref is null, the frontend will use this data from the snapshot
+            if (!orderObj.book && orderObj.bookSnapshot) {
+                orderObj.book = {
+                    ...orderObj.bookSnapshot,
+                    isDeleted: true
+                };
+            }
+            return orderObj;
+        });
+
+        // 4. Calculate Total Revenue 
+        // ✅ FIX: Do NOT use $lookup to 'books'. 
+        // Use the price stored in 'bookSnapshot' so deleted books are still counted!
         const revenueStats = await Order.aggregate([
-            {
-                $lookup: {
-                    from: "books",
-                    localField: "book",
-                    foreignField: "_id",
-                    as: "bookDetails"
-                }
-            },
-            { $unwind: "$bookDetails" },
             {
                 $group: {
                     _id: null,
-                    totalRevenue: { $sum: "$bookDetails.price" }
+                    // We sum the price directly from the snapshot stored in the order
+                    totalRevenue: { $sum: "$bookSnapshot.price" }
                 }
             }
         ]);

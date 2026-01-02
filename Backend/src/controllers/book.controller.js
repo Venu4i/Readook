@@ -42,9 +42,12 @@ const updateBook = asyncHandler (async (req, res) => {
         const user = await User.findById(req.user?._id)
         const BookId = req.params.id;
         const book = await Book.findById(BookId);
-        if (user.role !== "admin" && book.seller !== req.user._id) {
-        throw new ApiError(403, "Not authorized to update this book");
-        }
+        //console.log(book.seller)
+        //console.log(req.user._id)
+        
+        if (user.role !== "admin" && book.seller.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "Not authorized to update this book");
+}
         
         const updatedbook = await Book.findByIdAndUpdate(BookId, {
             url : req.body.url,
@@ -64,15 +67,16 @@ const updateBook = asyncHandler (async (req, res) => {
 const deleteBook = asyncHandler (async (req,res) => {
     try {
         const user = await User.findById(req.user?._id) //admin check
-        if(user.role !== "admin"){
-            throw new ApiError (403, "Only admins can delete books")
-        }
-        console.log("User found: ",user)
         const BookId = req.params.id //book check
         if(!BookId){
             throw new ApiError (404, "Book not found")
         }
         const targetBook = await Book.findById(BookId)
+        if(user.role !== "admin" && targetBook.seller.toString() !== req.user._id.toString()){
+            throw new ApiError (403, "Only admins/seller can delete books")
+        }
+        //console.log("User found: ",user)
+        
         await Book.findByIdAndDelete(BookId)
         res.status(200).json(new ApiResponse (200, "Book deleted successfully", targetBook))
 

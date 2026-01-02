@@ -5,15 +5,21 @@ const orderSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
+    bookSnapshot: {
+        title: String,
+        price: Number,
+        image: String,
+        sellerName: String
+    },
     book:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Book"
     },
-//     seller: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'User', // seller/admin
-//     required: true
-//    },
+    seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // seller/admin
+    required: true
+   },
     isRated: {
         type: Boolean,
         default: false

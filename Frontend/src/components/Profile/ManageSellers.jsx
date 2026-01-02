@@ -27,7 +27,7 @@ const ManageSellers = () => {
     try {
       const res = await axiosInstance.patch(`/admin/toggle-blacklist/${userId}`, {}, { headers });
       alert(res.data.message);
-      fetchSellers(); // Refresh list
+      fetchSellers(); 
     } catch (error) {
       alert("Failed to update status");
     }
@@ -48,11 +48,11 @@ const ManageSellers = () => {
     <>
       {!sellers && <Loader />}
       {sellers && (
-        <div className="min-h-screen p-0 md:p-4 text-zinc-100">
+        <div className="min-h-screen p-2 md:p-4 text-zinc-100">
           <h1 className="text-3xl md:text-5xl font-semibold text-zinc-500 mb-8">Manage Sellers</h1>
 
-          {/* Table Header */}
-          <div className="mt-4 bg-zinc-800 w-full rounded-t py-2 px-4 flex gap-2 border-b border-zinc-700">
+          {/* Table Header - Hidden on Mobile */}
+          <div className="hidden md:flex mt-4 bg-zinc-800 w-full rounded-t py-2 px-4 gap-2 border-b border-zinc-700">
             <div className="w-[5%] text-center font-semibold text-zinc-400">#</div>
             <div className="w-[25%] font-semibold">Seller Name</div>
             <div className="w-[35%] font-semibold">Email</div>
@@ -60,35 +60,47 @@ const ManageSellers = () => {
           </div>
 
           {/* Sellers List */}
-          {sellers.map((seller, i) => (
-            <div key={seller._id} className="bg-zinc-800 w-full py-4 px-4 flex gap-2 mt-1 hover:bg-zinc-850 transition-colors items-center">
-              <div className="w-[5%] text-center text-zinc-500">{i + 1}</div>
-              <div className="w-[25%] font-medium">{seller.username}</div>
-              <div className="w-[35%] text-zinc-400">{seller.email}</div>
-              
-              <div className="w-[35%] flex gap-2 justify-center">
-                {/* Blacklist Toggle Button */}
-                <button
-                  onClick={() => toggleBlacklist(seller._id)}
-                  className={`px-3 py-1 rounded text-xs font-bold transition-all ${
-                    seller.isBlacklisted 
-                    ? "bg-green-600 hover:bg-green-500 text-white" 
-                    : "bg-yellow-600 hover:bg-yellow-500 text-white"
-                  }`}
-                >
-                  {seller.isBlacklisted ? "Un-Blacklist" : "Blacklist"}
-                </button>
+          <div className="flex flex-col gap-1">
+            {sellers.map((seller, i) => (
+              <div 
+                key={seller._id} 
+                className="bg-zinc-800 w-full py-4 px-4 flex flex-col md:flex-row gap-3 md:gap-2 hover:bg-zinc-850 transition-colors items-start md:items-center rounded md:rounded-none border border-zinc-700 md:border-none"
+              >
+                {/* Index & Name */}
+                <div className="flex items-center w-full md:w-[30%] gap-4">
+                  <div className="text-zinc-500 font-mono text-sm md:w-[15%] md:text-center">#{i + 1}</div>
+                  <div className="font-medium text-lg md:text-base">{seller.username}</div>
+                </div>
 
-                {/* Delete Inventory Button */}
-                <button
-                  onClick={() => deleteBooks(seller._id, seller.username)}
-                  className="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded text-xs font-bold transition-all"
-                >
-                  Wipe Books
-                </button>
+                {/* Email */}
+                <div className="w-full md:w-[35%] text-zinc-400 text-sm md:text-base break-all">
+                  <span className="md:hidden text-zinc-500 mr-2">Email:</span>
+                  {seller.email}
+                </div>
+                
+                {/* Actions */}
+                <div className="w-full md:w-[35%] flex gap-2 justify-start md:justify-center border-t border-zinc-700 pt-3 md:pt-0 md:border-none">
+                  <button
+                    onClick={() => toggleBlacklist(seller._id)}
+                    className={`flex-1 md:flex-none px-3 py-2 md:py-1 rounded text-xs font-bold transition-all ${
+                      seller.isBlacklisted 
+                      ? "bg-green-600 hover:bg-green-500 text-white" 
+                      : "bg-yellow-600 hover:bg-yellow-500 text-white"
+                    }`}
+                  >
+                    {seller.isBlacklisted ? "Un-Blacklist" : "Blacklist"}
+                  </button>
+
+                  <button
+                    onClick={() => deleteBooks(seller._id, seller.username)}
+                    className="flex-1 md:flex-none bg-red-600 hover:bg-red-500 text-white px-3 py-2 md:py-1 rounded text-xs font-bold transition-all"
+                  >
+                    Wipe Books
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </>

@@ -29,22 +29,21 @@ const Orders = () => {
 
   const handleRateBook = async (bookId, orderId) => {
     const stars = rating[orderId];
-    if (!stars) {
-      return;
-    }
+    if (!stars) return;
 
     const confirmRate = window.confirm(`Confirm ${stars} star rating for this book?`);
 
     if (confirmRate) {
       try {
         await axiosInstance.post(
-          "/book/rate", // Ensure this matches your route
+          "/book/rate",
           { bookId, orderId, stars },
           { headers }
         );
         fetchOrders(); 
       } catch (error) {
         console.error("Error rating book:", error);
+        alert("Failed to submit rating. The book might no longer exist.");
       }
     }
   };
@@ -76,7 +75,9 @@ const Orders = () => {
 
           {/* Orders List */}
           {orders.map((items, i) => {
-            if (!items.book) return null;
+            // ✅ LOGIC: Fallback to snapshot if book is deleted
+            const bookData = items.book || items.bookSnapshot || {};
+            const isDeleted = !items.book;
 
             return (
               <div
@@ -86,39 +87,53 @@ const Orders = () => {
                 <div className="w-[3%] text-center pt-1 text-zinc-500">{i + 1}</div>
 
                 <div className="w-[22%] flex flex-col items-center text-center">
-                  <Link
-                    to={`/get-book-details/${items.book._id}`}
-                    className="text-blue-400 hover:text-blue-200 font-medium"
-                  >
-                    {items.book.title}
-                  </Link>
+                  {/* ✅ UI FIX: Remove Link if book is deleted */}
+                  {!isDeleted ? (
+                    <Link
+                      to={`/get-book-details/${items.book._id}`}
+                      className="text-blue-400 hover:text-blue-200 font-medium"
+                    >
+                      {bookData.title}
+                    </Link>
+                  ) : (
+                    <span className="text-zinc-400 font-medium italic">
+                      {bookData.title} <br />
+                      <span className="text-[10px] text-red-500/70">(Unavailable)</span>
+                    </span>
+                  )}
                   
-                  {/* Rating Section */}
+                  {/* Rating Section - Disabled if book is deleted */}
                   {items.status === "delivered" && !items.isRated && (
                     <div className="mt-3 bg-zinc-900/50 p-2 rounded-lg border border-zinc-700 w-full max-w-[140px]">
-                      <div className="flex gap-1 mb-2 justify-center">
-                        {[1, 2, 3, 4, 5].map((star) => (
+                      {!isDeleted ? (
+                        <>
+                          <div className="flex gap-1 mb-2 justify-center">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                className={`text-xl transition-all ${
+                                  (hover[items._id] || rating[items._id]) >= star 
+                                    ? "text-yellow-400" 
+                                    : "text-zinc-600"
+                                }`}
+                                onMouseEnter={() => setHover({ ...hover, [items._id]: star })}
+                                onMouseLeave={() => setHover({ ...hover, [items._id]: 0 })}
+                                onClick={() => setRating({ ...rating, [items._id]: star })}
+                              >
+                                ★
+                              </button>
+                            ))}
+                          </div>
                           <button
-                            key={star}
-                            className={`text-xl transition-all ${
-                              (hover[items._id] || rating[items._id]) >= star 
-                                ? "text-yellow-400" 
-                                : "text-zinc-600"
-                            }`}
-                            onMouseEnter={() => setHover({ ...hover, [items._id]: star })}
-                            onMouseLeave={() => setHover({ ...hover, [items._id]: 0 })}
-                            onClick={() => setRating({ ...rating, [items._id]: star })}
+                            onClick={() => handleRateBook(items.book._id, items._id)}
+                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold py-1 rounded"
                           >
-                            ★
+                            Rate Now
                           </button>
-                        ))}
-                      </div>
-                      <button
-                        onClick={() => handleRateBook(items.book._id, items._id)}
-                        className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold py-1 rounded"
-                      >
-                        Rate Now
-                      </button>
+                        </>
+                      ) : (
+                        <p className="text-[10px] text-zinc-500">Rating unavailable for deleted items</p>
+                      )}
                     </div>
                   )}
 
@@ -131,10 +146,12 @@ const Orders = () => {
                 </div>
 
                 <div className="w-[45%] text-zinc-400 text-sm pt-1">
-                  {items.book.description?.slice(0, 100)}...
+                  {bookData.description 
+                    ? `${bookData.description.slice(0, 100)}...` 
+                    : "Information preserved in purchase history."}
                 </div>
 
-                <div className="w-[9%] text-center pt-1 font-mono">₹{items.book.price}</div>
+                <div className="w-[9%] text-center pt-1 font-mono">₹{bookData.price}</div>
 
                 {/* Status and Verification Code Column */}
                 <div className="w-[16%] text-center flex flex-col items-center pt-1">
@@ -147,7 +164,6 @@ const Orders = () => {
                     {items.status}
                   </span>
 
-                  {/* SHOW CODE ONLY IF NOT DELIVERED OR CANCELLED */}
                   {items.status !== "delivered" && items.status !== "Cancelled" && items.deliveryCode && (
                     <div className="mt-3 p-2 bg-zinc-900 border border-zinc-700 rounded w-full">
                       <p className="text-[10px] text-zinc-500 uppercase font-bold">Delivery Code</p>

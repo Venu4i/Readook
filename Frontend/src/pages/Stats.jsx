@@ -19,9 +19,7 @@ const AdminDashboard = () => {
             const response = await axiosInstance.get("/admin/get-stats", {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
             });
-            // Matching your provided response structure: response.data.data
             setData(response.data.data);
-            console.log("Admin Stats Data:", response.data.data);
             setLoading(false);
         } catch (error) {
             console.error("Error fetching admin stats:", error);
@@ -34,6 +32,9 @@ const AdminDashboard = () => {
     }, []);
 
     if (loading) return <div className="bg-zinc-900 min-h-screen flex items-center justify-center"><Loader /></div>;
+
+    // Safety check to ensure data exists before destructuring
+    if (!data) return <div className="text-white text-center mt-10">No data available</div>;
 
     const { stats, chartData, recentOrders } = data;
 
@@ -76,23 +77,36 @@ const AdminDashboard = () => {
                 {/* 3. Recent Orders List */}
                 <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700 overflow-hidden">
                     <h2 className="text-xl font-semibold mb-4 border-b border-zinc-700 pb-2">Recent Orders</h2>
-                    <div className="space-y-4 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
-                        {recentOrders.map((order) => (
-                            <div key={order._id} className="flex items-center justify-between p-3 bg-zinc-900 rounded-md border border-zinc-800">
-                                <div>
-                                    <p className="text-sm font-medium text-zinc-100 truncate w-32 md:w-full">{order.book.title}</p>
-                                    <p className="text-xs text-zinc-500">by {order.user.username}</p>
+                    <div className="space-y-4 overflow-y-auto max-h-[350px] pr-2 custom-scrollbar">
+                        {recentOrders.map((order) => {
+                            // ✅ FIX: Use bookSnapshot if order.book is null
+                            const bookInfo = order.book || order.bookSnapshot || {};
+                            const isDeleted = !order.book;
+
+                            return (
+                                <div key={order._id} className="flex items-center justify-between p-3 bg-zinc-900 rounded-md border border-zinc-800 hover:border-zinc-600 transition-all">
+                                    <div className="flex-1 min-w-0 mr-4">
+                                        <p className="text-sm font-medium text-zinc-100 truncate">
+                                            {bookInfo.title || "Unknown Book"}
+                                        </p>
+                                        <p className="text-xs text-zinc-500 truncate">
+                                            by {order.user?.username || "Guest User"} 
+                                            {isDeleted && <span className="text-red-500 ml-2">(Deleted)</span>}
+                                        </p>
+                                    </div>
+                                    <div className="text-right flex-shrink-0">
+                                        <p className="text-sm font-bold text-yellow-100">₹{bookInfo.price || 0}</p>
+                                        <p className={`text-[10px] uppercase px-2 py-0.5 rounded font-bold mt-1 ${
+                                            order.status === 'delivered' ? 'bg-green-900/30 text-green-400' : 
+                                            order.status === 'Cancelled' ? 'bg-red-900/30 text-red-400' :
+                                            'bg-blue-900/30 text-blue-400'
+                                        }`}>
+                                            {order.status}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-sm font-bold text-yellow-100">₹{order.book.price}</p>
-                                    <p className={`text-[10px] uppercase px-2 py-0.5 rounded ${
-                                        order.status === 'delivered' ? 'bg-green-900/30 text-green-400' : 'bg-blue-900/30 text-blue-400'
-                                    }`}>
-                                        {order.status}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>
