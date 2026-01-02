@@ -22,7 +22,7 @@ Eliminates fraudulent "delivered" status updates by sellers.
 ### 3. Interactive UX & Feedback
 * **Dynamic Rating:** Users can rate books post-delivery, which triggers immediate updates to both the global book average and the user's personal interest profile.
 * **Real-time Feedback:** Interactive star-rating systems with state-driven UI updates.
-
+* **Responsiveness:** Smooth user experience across devices.
 ---
 
 ## 🛠️ Tech Stack
@@ -52,14 +52,14 @@ The engine dynamically generates a personalized feed by filtering out books alre
 2. **Customer View:** The code is displayed exclusively in the User's "Orders" section.
 3. **Delivery:** Seller requests the code from the customer.
 4. **Verification:** Backend validates `req.body.deliveryCode === order.deliveryCode`.
-
+5. **Blacklisting:** Admin can blacklist a user or seller.
 ---
 
 ## 🚦 Installation
 
 1. **Clone the repo:**
    ```bash
-   git clone [https://github.com/yourusername/readook.git](https://github.com/yourusername/readook.git)
+   git clone [https://github.com/Venu4i/readook.git](https://github.com/Venu4i/readook.git)
 
 # Navigate to backend
 cd backend
@@ -68,7 +68,7 @@ cd backend
 npm install
 
 # Start the server
-npm run dev
+nodemon start
 
 # Navigate to frontend
 cd frontend
