@@ -94,16 +94,29 @@ const Sidebar = ({ data }) => {
 
                         {/* Integrated Manage Sellers for Admin */}
                         {role === "admin" && (
-                            <NavLink
-                                to="/profile/manage-sellers"
-                                className={({ isActive }) =>
-                                    `text-zinc-100 font-semibold w-full py-2 px-4 text-center rounded transition-all duration-300 ${
-                                        isActive ? "bg-white text-zinc-900" : "hover:bg-zinc-900"
-                                    }`
-                                }
-                            >
-                                Manage Sellers
-                            </NavLink>
+                            <>
+                                <NavLink
+                                    to="/profile/manage-sellers"
+                                    className={({ isActive }) =>
+                                        `text-zinc-100 font-semibold w-full py-2 px-4 text-center rounded transition-all duration-300 ${
+                                            isActive ? "bg-white text-zinc-900" : "hover:bg-zinc-900"
+                                        }`
+                                    }
+                                >
+                                    Manage Sellers
+                                </NavLink>
+
+                                <NavLink
+                                    to="/profile/complaints"
+                                    className={({ isActive }) =>
+                                        `text-zinc-100 font-semibold w-full py-2 px-4 text-center rounded transition-all duration-300 ${
+                                            isActive ? "bg-white text-zinc-900" : "hover:bg-zinc-900"
+                                        }`
+                                    }
+                                >
+                                    Complaints
+                                </NavLink>
+                            </>
                         )}
                     </ul>
                 </div>

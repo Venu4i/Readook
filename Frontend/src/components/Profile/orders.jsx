@@ -48,6 +48,48 @@ const Orders = () => {
     }
   };
 
+  const handleComplaint = async (items) => {
+    try {
+      const reason = window.prompt(
+        "Enter complaint reason against this seller:"
+      );
+
+      if (!reason || reason.trim() === "") {
+        return;
+      }
+
+      const sellerId =
+        items.book?.seller?._id ||
+        items.bookSnapshot?.seller?._id;
+
+      if (!sellerId) {
+        alert("Seller information unavailable.");
+        return;
+      }
+
+      const res = await axiosInstance.post(
+        "/complaint/reportSeller",
+        {
+          reportedSeller: sellerId,
+          orderId: items._id,
+          bookId: items.book?._id || items.bookSnapshot?._id,
+          reason,
+        },
+        { headers }
+      );
+
+      alert(res.data.message || "Complaint submitted successfully");
+
+    } catch (error) {
+      console.error("Complaint Error:", error);
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to submit complaint"
+      );
+    }
+  };
+
   return (
     <>
       {!orders && <Loader />}
@@ -101,6 +143,22 @@ const Orders = () => {
                       <span className="text-[10px] text-red-500/70">(Unavailable)</span>
                     </span>
                   )}
+
+                  <div className="mt-2 flex flex-col items-center gap-1">
+                    <p className="text-[11px] text-zinc-500">
+                      Seller: 
+                      <span className="text-zinc-300 font-medium ml-1">
+                        {bookData.seller?.username || "Unknown"}
+                      </span>
+                    </p>
+
+                    <button
+                      className="text-[10px] px-2 py-1 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                      onClick={() => handleComplaint(items)}
+                    >
+                      Report Seller
+                    </button>
+                  </div>
                   
                   {/* Rating Section - Disabled if book is deleted */}
                   {items.status === "delivered" && !items.isRated && (

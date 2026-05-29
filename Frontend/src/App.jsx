@@ -23,6 +23,7 @@ import AddBooks from './components/Profile/AddBook.jsx';
 import AddedBooks from './components/Profile/AddedBooks.jsx';
 import EditBook from './components/Profile/EditBook.jsx';
 import ManageSellers from './components/Profile/ManageSellers.jsx';
+import Complaints from './components/Profile/Complaints.jsx';
 
 
 const App = () => {
@@ -58,6 +59,7 @@ const App = () => {
                 {role === "user" ? <Route path = "/profile/orders" element= { <Orders />} /> : <Route path = "/profile/addBooks" element= { <AddBooks />} />}
                 {role === "user" ? <Route path = "/profile/settings" element= { <Settings/>} /> : <Route path = "/profile/addedBooks" element= { <AddedBooks />} />}
                 {role === "admin" && <Route path="manage-sellers" element={<ManageSellers />} />}
+                {role === "admin" && <Route path="Complaints" element={<Complaints />} />}
 
             </Route>
 
