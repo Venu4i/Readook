@@ -22,6 +22,7 @@ import cartRouter from "./routes/cart.routes.js"
 import orderRouter from "./routes/order.routes.js"
 import adminRouter from "./routes/admin.routes.js"
 import complaintRouter from "./routes/complaint.routes.js"
+import aiRouter from "./routes/ai.routes.js";
 
 //declaration of routes
 app.use("/api/v1/user",userRouter)
@@ -31,6 +32,7 @@ app.use("/api/v1/cart",cartRouter)
 app.use("/api/v1/order", orderRouter)
 app.use("/api/v1/admin", adminRouter)
 app.use("/api/v1/complaint", complaintRouter)
+app.use("/api/v1/ai", aiRouter);
 
 app.use((err,_, res, next) => {
   console.error("🔥 Error Handler:", err);

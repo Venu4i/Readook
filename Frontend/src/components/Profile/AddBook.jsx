@@ -15,6 +15,8 @@ const AddBooks = () => {
     category: "",
   });
 
+  const [aiLoading, setAiLoading] = useState(false);
+
   const headers = {
     id: localStorage.getItem("id"),
     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -27,12 +29,43 @@ const AddBooks = () => {
     });
   };
 
+  const generateDescription = async () => {
+    if (!form.title || !form.author) {
+      return alert("Please enter title and author first");
+    }
+
+    try {
+      setAiLoading(true);
+
+      const res = await axiosInstance.post(
+        "/ai/generateDescription",
+        {
+          title: form.title,
+          author: form.author,
+        },
+        { headers }
+      );
+
+      setForm({
+        ...form,
+        description: res.data.data.description,
+        category: res.data.data.category,
+      });
+
+    } catch (error) {
+      console.error(error);
+      alert("Failed to generate description");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const res = await axiosInstance.post("/book/add-book", form, { headers });
-      console.log(res.data)
+      console.log(res.data);
       alert(res.data.message);
       navigate("/profile/addedBooks");
     } catch (error) {
@@ -72,9 +105,18 @@ const AddBooks = () => {
           name="author"
           value={form.author}
           onChange={handleChange}
-          className="w-full mb-4 p-2 rounded bg-zinc-700 text-white"
+          className="w-full mb-2 p-2 rounded bg-zinc-700 text-white"
           required
         />
+
+        <button
+          type="button"
+          onClick={generateDescription}
+          disabled={aiLoading}
+          className="w-full mb-4 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded transition"
+        >
+          {aiLoading ? "Generating..." : "Generate Description with AI"}
+        </button>
 
         <label className="block mb-2">Price (INR)</label>
         <input
