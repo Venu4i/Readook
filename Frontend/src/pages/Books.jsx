@@ -69,7 +69,7 @@ useEffect(() => {
 
     } catch (error) {
       console.error(error);
-      alert("AI discovery failed");
+      alert("error : " + (error.response?.data?.message || error.message));
     } finally {
       setAiLoading(false);
     }

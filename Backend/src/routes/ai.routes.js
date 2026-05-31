@@ -25,7 +25,6 @@ router.route("/generateKeywords").post(
 );
 
 router.route("/discoverBooks").post(
-    verifyJWT,
     discoverBooks
 );
 

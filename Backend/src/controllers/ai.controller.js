@@ -93,14 +93,17 @@ const generateKeywords = async (
 
 const discoverBooks = async (req, res) => {
     try {
+        if (!req.user?._id) {
+            throw new ApiError(
+                401,
+                "Please login to use AI Discovery"
+            );
+        }
 
         const { query } = req.body;
 
         if (!query?.trim()) {
-            return res.status(400).json({
-                success: false,
-                message: "Query is required"
-            });
+            throw new ApiError(400, "Query is required");
         }
 
         const prompt = `
@@ -230,10 +233,14 @@ Return the response, in which keywords must be able to find books around the que
 
         console.error("AI Discovery Error:", error);
 
-        return res.status(500).json({
-            success: false,
-            message: "AI discovery failed"
-        });
+        if (error instanceof ApiError) {
+            throw error;
+        }
+
+        throw new ApiError(
+            500,
+            "AI discovery failed"
+        );
     }
 };
 
