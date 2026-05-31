@@ -38,9 +38,10 @@ const getAdminDashboardData = asyncHandler(async (req, res) => {
         }));
 
         // 3. Get Recent Activity
-        // ✅ FIX: Populate 'user', but handle 'book' manually to include snapshots
+        // Populate 'user'
         const ordersFromDb = await Order.find()
             .populate("user", "username email")
+            .populate("book", "title author price url")
             .sort({ createdAt: -1 })
             .limit(10);
 
@@ -56,9 +57,7 @@ const getAdminDashboardData = asyncHandler(async (req, res) => {
             return orderObj;
         });
 
-        // 4. Calculate Total Revenue 
-        // ✅ FIX: Do NOT use $lookup to 'books'. 
-        // Use the price stored in 'bookSnapshot' so deleted books are still counted!
+        // 4. Calculate Total Revenue
         const revenueStats = await Order.aggregate([
             {
                 $group: {

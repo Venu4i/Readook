@@ -13,6 +13,10 @@ const bookSchema = new Schema ({
         type : String,
         required: true,
     },
+    keywords: {
+        type: [String],
+        default: []
+    },
     price:{
         type : Number,
         required: true,

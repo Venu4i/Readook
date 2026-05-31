@@ -68,8 +68,19 @@ const ManageSellers = () => {
               >
                 {/* Index & Name */}
                 <div className="flex items-center w-full md:w-[30%] gap-4">
-                  <div className="text-zinc-500 font-mono text-sm md:w-[15%] md:text-center">#{i + 1}</div>
-                  <div className="font-medium text-lg md:text-base">{seller.username}</div>
+                  <div className="text-zinc-500 font-mono text-sm md:w-[15%] md:text-center">
+                    #{i + 1}
+                  </div>
+
+                  <div>
+                    <div className="font-medium text-lg md:text-base">
+                      {seller.username}
+                    </div>
+
+                    <div className="text-xs text-zinc-500 font-mono break-all">
+                      {seller._id}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Email */}

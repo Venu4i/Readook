@@ -2,6 +2,8 @@ import { Router } from "express";
 
 import {
     generateDescription,
+    generateKeywords,
+    discoverBooks
 }
 from "../controllers/ai.controller.js";
 
@@ -15,6 +17,16 @@ const router = Router();
 router.route("/generateDescription").post(
     verifyJWT,
     generateDescription
+);
+
+router.route("/generateKeywords").post(
+    verifyJWT,
+    generateKeywords
+);
+
+router.route("/discoverBooks").post(
+    verifyJWT,
+    discoverBooks
 );
 
 export default router;

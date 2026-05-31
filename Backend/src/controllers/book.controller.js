@@ -5,6 +5,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import {asyncHandler} from '../utils/asyncHandler.js';
 import { getRecommendedBooks } from '../utils/recommendation.js';
+import { generateKeywords } from "./ai.controller.js";
 
 const addBook = asyncHandler( async(req,res) =>{
     //get book details
@@ -15,6 +16,12 @@ const addBook = asyncHandler( async(req,res) =>{
         if(user.role !== "admin" && user.role !== "seller"){
             throw new ApiError (403, "Only admins/sellers can add books ")
         }
+        const keywords = await generateKeywords(
+            req.body.title,
+            req.body.author,
+            req.body.description,
+            req.body.category
+        );
         const book = new Book(
             {
                 url : req.body.url,
@@ -26,6 +33,7 @@ const addBook = asyncHandler( async(req,res) =>{
                 seller : req.user?._id ,//linking book to seller
                 quantity:req.body.quantity,
                 category : req.body.category,
+                keywords: keywords
             }
         )
         await book.save();
@@ -48,7 +56,12 @@ const updateBook = asyncHandler (async (req, res) => {
         if (user.role !== "admin" && book.seller.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "Not authorized to update this book");
 }
-        
+        const keywords = await generateKeywords(
+            req.body.title,
+            req.body.author,
+            req.body.description,
+            req.body.category
+        );
         const updatedbook = await Book.findByIdAndUpdate(BookId, {
             url : req.body.url,
                     title : req.body.title,
@@ -56,6 +69,9 @@ const updateBook = asyncHandler (async (req, res) => {
                     price: req.body.price,
                     description: req.body.description,
                     language: req.body.language,
+                    category: req.body.category,
+                    quantity: req.body.quantity,
+                    keywords: keywords
         })
         res.status(200).json(new ApiResponse (200, updatedbook, "Book details updated successfully"))
     } catch (error) {

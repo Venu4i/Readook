@@ -79,7 +79,6 @@ const AdminDashboard = () => {
                     <h2 className="text-xl font-semibold mb-4 border-b border-zinc-700 pb-2">Recent Orders</h2>
                     <div className="space-y-4 overflow-y-auto max-h-[350px] pr-2 custom-scrollbar">
                         {recentOrders.map((order) => {
-                            // ✅ FIX: Use bookSnapshot if order.book is null
                             const bookInfo = order.book || order.bookSnapshot || {};
                             const isDeleted = !order.book;
 

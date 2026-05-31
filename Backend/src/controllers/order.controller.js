@@ -87,7 +87,6 @@ const getAllOrders = asyncHandler(async (req, res) => {
     if (user.role === "admin") {
         query = {}; 
     } else if (user.role === "seller") {
-        // ✅ This works now because we have the seller field in Schema
         query = { seller: user._id }; 
     } else {
         throw new ApiError(403, "Access denied");
@@ -101,7 +100,7 @@ const getAllOrders = asyncHandler(async (req, res) => {
     const formattedOrders = orders.map(order => {
         const orderData = order.toObject();
 
-        // ✅ Fallback logic: If book is deleted, use Snapshot
+        // ✅ Fallback logic: If book is deleted
         if (!orderData.book) {
             orderData.book = {
                 ...orderData.bookSnapshot, // Contains title, price, image, sellerName

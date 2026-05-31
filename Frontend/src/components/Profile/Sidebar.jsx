@@ -59,7 +59,12 @@ const Sidebar = ({ data }) => {
             {/* Admin / Seller Links */}
             {(role === "admin" || role === "seller") && (
                 <div className="w-full">
-                    <ul className="md:space-y-4 flex flex-row md:flex-col items-center justify-center w-full mt-4 gap-2 md:gap-0">
+                   <ul className={`md:space-y-4 items-center justify-center w-full mt-4 md:flex-col md:gap-0 ${
+                        role === "admin"
+                        ? "flex flex-col gap-2"
+                        : "flex flex-row gap-2"
+                    }`}
+                    >
                         <NavLink
                             to="/profile"
                             end
