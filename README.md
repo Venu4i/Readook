@@ -1,80 +1,495 @@
 # 📘 Readook - AI-Powered Book Marketplace
 
-Readook is a full-stack e-commerce multiseller-admin platform that goes beyond simple buying and selling. It features a sophisticated **Personalized Recommendation Engine** and a **Secure Handshake Delivery System** to ensure high-quality user experience and transaction security.
+Readook is a full-stack MERN marketplace that blends modern e-commerce with AI and ML based recommendation systems. It features intelligent book discovery powered by Google Gemini, personalized recommendations,role-based multi-vendor management, secure delivery verification and password change feature.
+---
+
+# 🚀 Key Features
+
+## 🤖 AI-Powered Discovery & Recommendation System
+
+Readook combines traditional ML based recommendation engine using weighted scoring technique with Generative AI to create an intelligent book discovery experience.
+
+### AI Discovery Assistant
+
+Powered by **Google Gemini 2.5 Flash**
+
+Users can search naturally using queries such as:
+
+```text
+Books about habit building
+Hindi motivational books
+Books similar to Atomic Habits
+Finance books for beginners
+```
+
+Gemini extracts:
+
+* Author preferences
+* Language preferences
+* Categories
+* Search keywords
+
+The extracted data is then used to search marketplace inventory intelligently.
 
 ---
 
-## 🚀 Key Features
+### AI Description Generator
 
-### 1. Smart Recommendation Engine
-Readook learns user preferences to provide a tailored browsing experience.
-* **Interest Profiling:** Utilizes **Mongoose Maps** to track user affinity for specific categories and authors based on ratings and favorites.
-* **Weighted Scoring:** Implements a custom algorithm that calculates a "Recommendation Score" using:
-  $Score = (InterestWeight \times 10) + GlobalRating$
-* **Cold Start Support:** Features "Soft-Auth" middleware to provide guest users with global trends while instantly switching to personalized vectors upon login.
+Sellers can only provide:
 
-### 2. Secure Handshake Delivery (DVC)
-Eliminates fraudulent "delivered" status updates by sellers.
-* **Verification Code:** Every order generates a unique **6-digit Delivery Verification Code (DVC)**.
-* **Handshake Protocol:** Sellers are restricted from closing an order unless they input the specific code provided by the customer at the point of physical delivery.
-* **Backend Validation:** Enforces strict code matching between the request payload and the database before committing status changes.
+```text
+Book Title
+Author Name
+```
 
-### 3. Interactive UX & Feedback
-* **Dynamic Rating:** Users can rate books post-delivery, which triggers immediate updates to both the global book average and the user's personal interest profile.
-* **Real-time Feedback:** Interactive star-rating systems with state-driven UI updates.
-* **Responsiveness:** Smooth user experience across devices.
----
+for Gemini to automatically generate:
 
-## 🛠️ Tech Stack
+* Professional marketplace description
+* Book category
 
-* **Frontend:** React.js, Tailwind CSS, Axios, Lucide React
-* **Backend:** Node.js, Express.js
-* **Database:** MongoDB & Mongoose
-* **Authentication:** JWT (JSON Web Tokens) with Optional Middleware
+This significantly reduces listing effort and improves listing quality.
 
 ---
 
-## 🏗️ Architecture & Logic
+### AI Keyword Generation
 
-### Recommendation Workflow
-The engine dynamically generates a personalized feed by filtering out books already in the user's collection and applying a weighted scoring system to the rest:
+For every book, Gemini-API generates searchable metadata:
 
-* **String Normalization:** Converts all category and author keys to lowercase to prevent duplicates (e.g., treating "Self-help" and "Self-Help" as a single interest).
-* **Multi-Tiered Weighting:** * **High Impact (Orders/Ratings):** Books ordered and rated 4+ stars provide a significant "booster" to that category in the interest profile.
-    * **Moderate Impact (Favorites):** Adding a book to "Favorites" signals intent and increases the category weight, though with a smaller multiplier than a confirmed purchase, allowing the feed to evolve without being dominated by a single click.
-* **Score Calculation:**
-  $$Score = (InterestWeight \times 10) + GlobalRating$$
+```text
+Author Keywords
+Category Keywords
+Search Keywords
+Discovery Keywords
+```
 
+Example:
 
+```text
+Atomic Habits
 
-### Order Security Flow
-1. **Placement:** System generates and stores `deliveryCode`.
-2. **Customer View:** The code is displayed exclusively in the User's "Orders" section.
-3. **Delivery:** Seller requests the code from the customer.
-4. **Verification:** Backend validates `req.body.deliveryCode === order.deliveryCode`.
-5. **Blacklisting:** Admin can blacklist a user or seller.
+Keywords:
+habits
+discipline
+productivity
+self improvement
+james clear
+success
+```
+
 ---
 
-## 🚦 Installation
+### Hybrid Recommendation Engine
 
-1. **Clone the repo:**
-   ```bash
-   git clone [https://github.com/Venu4i/Readook.git](https://github.com/Venu4i/Readook.git)
+Readook does not directly return AI responses.
 
-# Navigate to backend
+Instead:
+
+```text
+Gemini extracts intent
+↓
+Keywords generated
+↓
+Books filtered
+↓
+Weighted scoring applied
+↓
+Best matches returned
+```
+
+This produces faster, explainable, and inventory-aware recommendations.
+
+---
+
+## 🎯 Personalized Recommendation Engine
+
+Readook learns user preferences over time.
+
+### Interest Profiling
+
+Uses **Mongoose Maps** to maintain user affinity vectors for:
+
+* Categories
+* Authors
+
+Based on:
+
+* Ratings
+* Favourites
+* Orders
+
+---
+
+### Weighted Scoring
+
+Recommendation Score:
+
+```text
+Score = (InterestWeight × 10) + GlobalRating
+```
+
+Books are ranked according to both:
+
+* User preference
+* Platform-wide quality
+
+---
+
+### Multi-Tier Learning
+
+#### High Impact Actions
+
+* Orders
+* Ratings
+
+These provide strong positive signals.
+
+#### Medium Impact Actions
+
+* Adding books to favourites
+
+Provides intent signals without dominating recommendations.
+
+---
+
+### Cold Start Support
+
+Guest users receive:
+
+```text
+Global Trending Books
+```
+
+Authenticated users receive:
+
+```text
+Personalized Recommendations
+```
+
+using soft-auth recommendation middleware.
+
+---
+
+## 🔐 Secure Handshake Delivery System
+
+Prevents fraudulent delivery confirmations.
+
+### Delivery Verification Code
+
+Every order generates a unique:
+
+```text
+6-Digit Delivery Verification Code
+```
+
+---
+
+### Delivery Flow
+
+#### 1. Order Placement
+
+System generates:
+
+```text
+deliveryCode
+```
+
+and stores it securely.
+
+#### 2. Customer Access
+
+The code is visible only inside the user's order section.
+
+#### 3. Physical Delivery
+
+Seller requests the code from the customer.
+
+#### 4. Verification
+
+Backend validates:
+
+```js
+req.body.deliveryCode === order.deliveryCode
+```
+
+before updating order status.
+
+---
+
+### Security Benefits
+
+* Prevents fake deliveries
+* Protects buyers
+* Prevents seller abuse
+* Creates a verified delivery handshake
+
+---
+
+# 🔒 Authentication & Security
+
+## JWT Authentication
+
+* Access Token Architecture
+* Refresh Token Architecture
+* Refresh Token Rotation
+* Protected Routes
+
+---
+
+## Password Security
+
+* bcrypt Password Hashing
+* Secure Password Storage
+* Password Reset Flow
+
+---
+
+## Email Verification
+
+Implemented using:
+
+```text
+Nodemailer + OTP Verification
+```
+
+Features:
+
+* Mandatory email verification before registration
+* Expiring OTPs
+* Duplicate account prevention
+
+Flow:
+
+```text
+Enter Email
+↓
+Receive OTP
+↓
+Verify OTP
+↓
+Account Created
+```
+
+---
+
+## Forgot Password System
+
+Secure OTP-based password reset.
+
+Flow:
+
+```text
+Forgot Password
+↓
+Enter Email
+↓
+Receive OTP
+↓
+Verify OTP
+↓
+Set New Password
+↓
+Redirect To Login
+```
+
+---
+
+## Authorization
+
+Role-Based Access Control:
+
+```text
+User
+Seller
+Admin
+```
+
+Backend-enforced authorization protects:
+
+* Admin Routes
+* Seller Actions
+* Ownership-based operations
+
+---
+
+# 📦 Marketplace Features
+
+## User Features
+
+* Browse books
+* View book details
+* Add favourites
+* Place orders
+* View order history
+* Rate purchased books
+* Manage profile
+
+---
+
+## Seller Features
+
+* Add books
+* Edit books
+* Delete books
+* AI-generated descriptions
+* AI-generated keywords
+
+---
+
+## Admin Features
+
+* Manage sellers
+* Manage orders
+* Handle complaints
+* Blacklist malicious users
+* Platform moderation
+
+---
+
+# ⭐ Interactive Rating System
+
+Users can rate books after successful delivery.
+
+Features:
+
+* Dynamic star rating UI
+* Real-time feedback
+* Recommendation profile updates
+* Global rating recalculation
+
+---
+
+# 📜 Snapshot-Based Order Storage
+
+When an order is placed:
+
+```text
+Book Snapshot Stored
+```
+
+Benefits:
+
+* Preserves order history
+* Prevents broken orders
+* Supports deleted books safely
+
+---
+
+# 🛡️ Security Highlights
+
+* JWT Authentication
+* Refresh Tokens
+* bcrypt Password Hashing
+* OTP Email Verification
+* Forgot Password OTP Flow
+* Protected Backend Routes
+* Ownership Verification
+* Role-Based Authorization
+* HTTP-Only Refresh Token Cookies
+* Delivery Verification Codes
+* Request Validation
+
+---
+
+# 🛠️ Tech Stack
+
+## Frontend
+
+```text
+React.js
+Redux Toolkit
+React Router
+Tailwind CSS
+Axios
+```
+
+## Backend
+
+```text
+Node.js
+Express.js
+JWT
+bcrypt
+Nodemailer
+Google Gemini API
+```
+
+## Database
+
+```text
+MongoDB
+Mongoose
+```
+
+## AI
+
+```text
+Google Gemini 2.5 Flash
+```
+
+---
+
+# 🏗️ Architecture Highlights
+
+* RESTful API Architecture
+* Role-Based Access Control
+* Recommendation Engine
+* AI-Powered Search Layer
+* Snapshot Order System
+* Refresh Token Authentication
+* Multi-Vendor Marketplace Architecture
+
+---
+
+# 🚦 Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/Venu4i/Readook.git
+```
+
+## Backend Setup
+
+```bash
 cd backend
 
-# Install dependencies
 npm install
 
-# Start the server
-nodemon start
+npm run dev
+```
 
-# Navigate to frontend
+## Frontend Setup
+
+```bash
 cd frontend
 
-# Install dependencies
 npm install
 
-# Start the application
 npm run dev
+```
+
+---
+
+# 🔮 Future Enhancements
+
+* Seller Analytics Dashboard
+* Book Reviews with sentiment analysis
+* Wishlist Notifications
+* Payment Gateway Integration
+
+---
+
+# 👨‍💻 Author
+
+**Venu Verma**
+
+Readook demonstrates practical implementation of:
+
+* Full Stack MERN Development
+* Authentication & Security
+* Recommendation Systems
+* AI Integration
+* REST API Design
+* MongoDB Data Modeling
+* Marketplace Architecture
+* Role-Based Authorization
