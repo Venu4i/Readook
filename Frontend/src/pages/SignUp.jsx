@@ -7,7 +7,8 @@ export default function SignupPage() {
     username: '',
     email: '',
     password: '',
-    role: 'user' // default role
+    role: 'user' ,// default role
+    otp : ''
   });
 
   const navigate = useNavigate()
@@ -16,6 +17,7 @@ export default function SignupPage() {
   const [message, setMessage] = useState({ type: '', text: '' });
   const roles = ["user", "seller"];
   const [showDropdown, setShowDropdown] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -49,6 +51,58 @@ export default function SignupPage() {
       setMessage({ type: 'error', text: err.message });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const sendOTP = async () => {
+
+    if (!form.email.trim()) {
+      setMessage({
+        type: "error",
+        text: "Enter email first"
+      });
+      return;
+    }
+
+    try {
+
+      setOtpLoading(true);
+
+      const res = await fetch(
+        "http://localhost:3000/api/v1/otp/send-otp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: form.email
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.message || "Failed to send OTP"
+        );
+      }
+
+      setMessage({
+        type: "success",
+        text: "OTP sent to your email"
+      });
+
+    } catch (err) {
+
+      setMessage({
+        type: "error",
+        text: err.message
+      });
+
+    } finally {
+      setOtpLoading(false);
     }
   };
 
@@ -86,6 +140,28 @@ export default function SignupPage() {
             className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              name="otp"
+              value={form.otp}
+              onChange={handleChange}
+              placeholder="Enter OTP"
+              className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+
+            <button
+              type="button"
+              onClick={sendOTP}
+              disabled={otpLoading}
+              className="bg-green-500 text-white px-4 rounded-lg hover:bg-green-600"
+            >
+              {otpLoading
+                ? "Sending..."
+                : "Send OTP"}
+            </button>
+          </div>
           <input
             type="password"
             name="password"

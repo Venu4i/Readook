@@ -5,6 +5,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import mongoose, { trusted } from "mongoose";
+import { OTP } from "../models/otp.model.js";
+import { sendEmail } from "../utils/email.js";
 
 const generateAccessAndRefreshTokens = async (userId) =>{
     try {
@@ -27,11 +29,11 @@ const generateAccessAndRefreshTokens = async (userId) =>{
 }
 
 const registerUser = asyncHandler(async (req, res) => {
-    console.log("📥 Incoming register request:", req.body); // 👈 Add this
+    console.log("📥 Incoming register request:", req.body); 
 
-    const { username, email, password, role } = req.body;
+    const { username, email, password, role, otp } = req.body;
 
-    if ([username, email, password, role].some((field) => field?.trim() === "")) {
+    if ([username, email, password, role, otp].some((field) => field?.trim() === "")) {
         throw new ApiError(400,"All fields are required.");
     }
 
@@ -43,11 +45,46 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User already exists");
     }
 
+    const otpRecord =
+        await OTP.findOne({ email });
+
+    if (!otpRecord) {
+        throw new ApiError(
+            400,
+            "Please verify your email first"
+        );
+    }
+
+    if (
+        otpRecord.expiresAt <
+        new Date()
+    ) {
+        await OTP.deleteMany({ email });
+
+        throw new ApiError(
+            400,
+            "OTP expired"
+        );
+    }
+
+    if (
+        otpRecord.otp !== otp
+    ) {
+        throw new ApiError(
+            400,
+            "Invalid OTP"
+        );
+    }
+
     const user = await User.create({
         username: username.toLowerCase(),
         email,
         password,
-        role: role || "user",
+        role: role || "user"
+    });
+
+     await OTP.deleteMany({
+        email
     });
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
@@ -212,19 +249,121 @@ const updateAddress = asyncHandler (async (req,res) => {
     .json(new ApiResponse(200, updateduser, "Address updated successfully"))
 })
 
-const changePassword = asyncHandler (async (req,res) =>{
-    const {oldPassword, newPassword} = req.body;
-    const user = await User.findById(req.user?._id)
-    const isPasswordValid = await user.isPasswordCorrect(oldPassword)
+const forgotPassword = asyncHandler(async (req, res) => {
 
-    if(!isPasswordValid){
-        throw new ApiError(401, "Invalid old password")
+    const { email } = req.body;
+
+    if (!email) {
+        throw new ApiError(
+            400,
+            "Email is required"
+        );
     }
-    user.password = newPassword
-    await user.save({validBeforeSave: false})
 
-    return res.status(200).json(new ApiResponse(200,{},"Password changed successfully"))
-})
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new ApiError(
+            404,
+            "User not found"
+        );
+    }
+
+    const otp = Math.floor(
+        100000 + Math.random() * 900000
+    ).toString();
+
+    await OTP.deleteMany({
+        email,
+        purpose: "resetPassword"
+    });
+
+    await OTP.create({
+        email,
+        otp,
+        purpose: "resetPassword",
+        expiresAt:
+            new Date(
+                Date.now() +
+                10 * 60 * 1000
+            )
+    });
+
+    await sendEmail({
+        to: email,
+        subject: "Readook Password Reset OTP",
+        text: `Your OTP is ${otp}. It is valid for 10 minutes.`
+    });
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {},
+            "OTP sent successfully"
+        )
+    );
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+
+    const {
+        email,
+        otp,
+        newPassword
+    } = req.body;
+
+    const otpRecord =
+        await OTP.findOne({
+            email,
+            otp,
+            purpose: "resetPassword"
+        });
+
+    if (!otpRecord) {
+        throw new ApiError(
+            400,
+            "Invalid OTP"
+        );
+    }
+
+    if (
+        otpRecord.expiresAt <
+        new Date()
+    ) {
+        throw new ApiError(
+            400,
+            "OTP expired"
+        );
+    }
+
+    const user =
+        await User.findOne({
+            email
+        });
+
+    if (!user) {
+        throw new ApiError(
+            404,
+            "User not found"
+        );
+    }
+
+    user.password = newPassword;
+
+    await user.save();
+
+    await OTP.deleteOne({
+        _id: otpRecord._id
+    });
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {},
+            "Password updated successfully"
+        )
+    );
+});
 
 
 export {
@@ -235,5 +374,6 @@ export {
     generateAccessAndRefreshTokens,
     getUser,
     updateAddress,
-    changePassword
+    forgotPassword,
+    resetPassword
 }

@@ -94,6 +94,15 @@ export default function LoginPage() {
             className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-zinc-900"
             required
           />
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={() => navigate("/forgot-password")}
+              className="text-blue-500 text-sm hover:underline"
+            >
+              Forgot Password?
+            </button>
+          </div>
           <button
             type="submit"
             disabled={loading}

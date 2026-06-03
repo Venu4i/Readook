@@ -11,6 +11,7 @@ import { authActions } from './store/auth.js'
 import Books from './pages/Books.jsx'
 import Login from './pages/Login.jsx'
 import SignUp from './pages/SignUp.jsx'
+import ForgotPassword from "./pages/ForgotPassword";
 import Cart from './pages/Cart.jsx'
 import Stats from './pages/Stats.jsx'
 import Profile from './pages/Profile.jsx'
@@ -24,6 +25,7 @@ import AddedBooks from './components/Profile/AddedBooks.jsx';
 import EditBook from './components/Profile/EditBook.jsx';
 import ManageSellers from './components/Profile/ManageSellers.jsx';
 import Complaints from './components/Profile/Complaints.jsx';
+
 
 
 const App = () => {
@@ -51,6 +53,7 @@ const App = () => {
             <Route path = "/books" element = { <Books /> }  />
             <Route path = "/login" element = { <Login /> }  />
             <Route path = "/signup" element = { <SignUp /> }  />
+            <Route path= "/forgot-password" element={<ForgotPassword />} />
             <Route path = "/cart" element = { <Cart /> }  />
             <Route path = "/admin-stats" element = { <Stats /> }  />
             <Route path='editBook/:id' element={<EditBook />} />

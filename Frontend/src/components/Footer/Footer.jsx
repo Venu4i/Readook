@@ -3,9 +3,9 @@ const Footer = () => {
     return (
         <div className="bg-zinc-800 text-white px-8 py-4">
             <h1 className="text-xl font-semibold text-center"
-            >&copy; 2025, Made with Care By Venu.</h1>
+            >&copy; 2026, Made with Care.</h1>
             <h1 className="text-xl font-semibold text-center"> 
-                Contact : admin.readook@gmail.com
+                Contact : readook.here@gmail.com
             </h1>
         </div>
     )
