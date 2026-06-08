@@ -21,7 +21,7 @@ const AddedBooks = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log(resp);
+        //console.log(resp);
         setData(resp.data.data);
       } catch (error) {
         console.log(error);

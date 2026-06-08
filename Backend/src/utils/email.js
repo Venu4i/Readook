@@ -14,11 +14,11 @@ export const sendEmail = async ({
     text
 }) => {
 
-    console.log("EMAIL PARAMS:", {
-        to,
-        subject,
-        text
-    });
+    // console.log("EMAIL PARAMS:", {
+    //     to,
+    //     subject,
+    //     text
+    // });
 
     await transporter.sendMail({
         from: process.env.EMAIL_USER,

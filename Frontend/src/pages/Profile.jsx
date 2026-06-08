@@ -23,7 +23,7 @@ const Profile = () => {
       });
 
       const userData = response.data?.data || {};
-      console.log("User data:", userData);
+      //console.log("User data:", userData);
       setProfile(userData)
 
     } catch (error) {

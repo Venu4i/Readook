@@ -17,7 +17,7 @@ const Favourites = () => {
       const response = await axiosInstance.get("/favourites/get-favourites", {
         headers,
       });
-      console.log (response.data.data);
+      //console.log (response.data.data);
 
       
       const books = response.data.data;

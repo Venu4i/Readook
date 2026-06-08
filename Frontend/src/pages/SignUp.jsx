@@ -39,7 +39,7 @@ export default function SignupPage() {
       });
 
       const data = await res.json();
-      console.log(data);
+      //console.log(data);
       
 
       if (!res.ok) throw new Error(data.message || 'Signup failed');

@@ -107,7 +107,7 @@ const getAllBooks = asyncHandler(async (req, res) => {
         const userId = req.user?._id;
         let finalBooks = [];
 
-        console.log("Entered getAllBooks")
+        //console.log("Entered getAllBooks")
 
         // 1. Try to get personalized recommendations if user is logged in
         if (userId) {

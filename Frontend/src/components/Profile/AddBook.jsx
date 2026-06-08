@@ -65,7 +65,7 @@ const AddBooks = () => {
 
     try {
       const res = await axiosInstance.post("/book/add-book", form, { headers });
-      console.log(res.data);
+      //console.log(res.data);
       alert(res.data.message);
       navigate("/profile/addedBooks");
     } catch (error) {

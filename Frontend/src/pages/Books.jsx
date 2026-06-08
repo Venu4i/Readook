@@ -64,7 +64,7 @@ useEffect(() => {
           query: aiQuery,
         }
       );
-      console.log("AI Discovery Response:", res.data);
+      //console.log("AI Discovery Response:", res.data);
       setData(res.data.books);
 
     } catch (error) {

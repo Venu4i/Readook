@@ -30,7 +30,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        console.log("REFRESH TOKEN CALLED");
+        //console.log("REFRESH TOKEN CALLED");
 
         const refreshResponse = await axios.post(
           "http://localhost:3000/api/v1/user/refresh-token",

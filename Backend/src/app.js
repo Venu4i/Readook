@@ -1,8 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 const app = express();
+
+const _dirname = path.resolve();
 
 app.use(cors({
     origin: process.env.CORS_ORIGIN || "http://localhost:5173",
@@ -35,6 +38,11 @@ app.use("/api/v1/admin", adminRouter)
 app.use("/api/v1/complaint", complaintRouter)
 app.use("/api/v1/ai", aiRouter);
 app.use("/api/v1/otp", otpRouter);
+
+app.use(express.static(path.join(_dirname, '/Frontend/dist')));
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.resolve(_dirname, "Frontend", "dist", "index.html"));
+});
 
 app.use((err,_, res, next) => {
   console.error("🔥 Error Handler:", err);

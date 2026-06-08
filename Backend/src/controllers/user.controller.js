@@ -13,7 +13,7 @@ const generateAccessAndRefreshTokens = async (userId) =>{
         //console.log("shuru to hua")
         const user = await User.findById(userId)
         if(!user){
-            console.log("user ni mila yrr")
+            console.log("user not found")
         }
         const accessToken = user.generateAccessToken()
         const refreshToken = user.generateRefreshToken()

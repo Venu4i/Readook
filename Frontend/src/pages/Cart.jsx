@@ -22,7 +22,7 @@ const Cart = () => {
       const response = await axiosInstance.get("/cart/get-cart", {
         headers,
       });
-      console.log(response.data.data);
+      //console.log(response.data.data);
 
       
       const books = response.data.data;
@@ -42,7 +42,7 @@ const Cart = () => {
         cart.forEach((item) => {
             total += item.book.price * (item.quantity || 1); 
         });
-        console.log("Total Cart Value: ", total);
+        //console.log("Total Cart Value: ", total);
         setTotal(total);
         total=0;
     }
