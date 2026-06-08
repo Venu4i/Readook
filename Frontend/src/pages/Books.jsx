@@ -26,7 +26,7 @@ useEffect(() => {
           : {};
 
         const resp = await axiosInstance.get(
-          "http://localhost:3000/api/v1/book/get-all-books",
+          "https://readook.onrender.com/api/v1/book/get-all-books",
           config 
         );
 

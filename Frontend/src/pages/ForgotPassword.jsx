@@ -26,7 +26,7 @@ export default function ForgotPassword() {
       setOtpLoading(true);
 
       const res = await fetch(
-        "http://localhost:3000/api/v1/otp/send-reset-otp",
+        "https://readook.onrender.com/api/v1/otp/send-reset-otp",
         {
           method: "POST",
           headers: {
@@ -70,7 +70,7 @@ export default function ForgotPassword() {
       setLoading(true);
 
       const res = await fetch(
-        "http://localhost:3000/api/v1/otp/reset-password",
+        "https://readook.onrender.com/api/v1/otp/reset-password",
         {
           method: "POST",
           headers: {

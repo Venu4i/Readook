@@ -15,7 +15,7 @@ const RecentlyAdded = () => {
     useEffect(() => {
         const fetchBooks = async () => {
             try {
-                const resp = await axios.get(`http://localhost:3000/api/v1/book/get-recent-books`)
+                const resp = await axios.get(`https://readook.onrender.com/api/v1/book/get-recent-books`)
                 setData(resp.data.data)
                 
             } catch (error) {

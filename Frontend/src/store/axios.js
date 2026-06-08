@@ -3,7 +3,7 @@ import store from "../store";
 import { authActions } from "../store/auth";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
+  baseURL: "https://readook.onrender.com/api/v1",
   withCredentials: true,
 });
 
@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
         //console.log("REFRESH TOKEN CALLED");
 
         const refreshResponse = await axios.post(
-          "http://localhost:3000/api/v1/user/refresh-token",
+          "https://readook.onrender.com/api/v1/user/refresh-token",
           {},
           {
             withCredentials: true,

@@ -29,7 +29,7 @@ export default function SignupPage() {
     setMessage({ type: '', text: '' });
 
     try {
-      const res = await fetch('http://localhost:3000/api/v1/user/register', {
+      const res = await fetch('https://readook.onrender.com/api/v1/user/register', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -69,7 +69,7 @@ export default function SignupPage() {
       setOtpLoading(true);
 
       const res = await fetch(
-        "http://localhost:3000/api/v1/otp/send-otp",
+        "https://readook.onrender.com/api/v1/otp/send-otp",
         {
           method: "POST",
           headers: {

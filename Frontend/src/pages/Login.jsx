@@ -21,7 +21,7 @@ export default function LoginPage() {
     setMessage({ type: '', text: '' });
 
     try {
-      const res = await fetch('http://localhost:3000/api/v1/user/login', {
+      const res = await fetch('https://readook.onrender.com/api/v1/user/login', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
