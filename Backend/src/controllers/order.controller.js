@@ -22,7 +22,7 @@ const placeOrder = asyncHandler(async (req, res) => {
         const bookId = item.book._id ? item.book._id : item.book;
         const quantity = item.quantity || 1;
 
-        // Verify item is actually in user's cart
+        
         const isInCart = user.cart.some(
             (cartItem) => cartItem.book.toString() === bookId.toString()
         );
@@ -41,7 +41,7 @@ const placeOrder = asyncHandler(async (req, res) => {
             bookSnapshot: {
                 title: book.title,
                 price: book.price,
-                image: book.url, // or book.image depending on your schema
+                image: book.url, // or book.image depending on  schema
                 author: book.author
             },
             user: user._id,
@@ -100,7 +100,7 @@ const getAllOrders = asyncHandler(async (req, res) => {
     const formattedOrders = orders.map(order => {
         const orderData = order.toObject();
 
-        // ✅ Fallback logic: If book is deleted
+        //Fallback: If book is deleted
         if (!orderData.book) {
             orderData.book = {
                 ...orderData.bookSnapshot, // Contains title, price, image, sellerName
@@ -126,7 +126,7 @@ const updateStatus = asyncHandler(async (req, res) => {
     const order = await Order.findById(orderId);
     if (!order) throw new ApiError(404, "Order not found");
 
-    // AUTH CHECK: Is the person updating this the seller or admin?
+    // AUTH CHECK:  seller or admin?
     const isSeller = order.seller.toString() === req.user._id.toString();
     const isAdmin = req.user.role === "admin";
 
@@ -134,7 +134,7 @@ const updateStatus = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Unauthorized to update this order");
     }
 
-    // VERIFICATION: Check delivery code if status is being set to delivered
+    // VERIFICATION: 
     if (status === "delivered") {
         if (!deliveryCode || order.deliveryCode !== deliveryCode) {
             throw new ApiError(400, "Invalid delivery verification code");

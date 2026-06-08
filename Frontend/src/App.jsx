@@ -39,7 +39,6 @@ const App = () => {
         const role = localStorage.getItem('role');
 
         if (token && id && role) {
-          // Pass the token as a payload so Redux state.accessToken is set!
           dispatch(authActions.login({ accessToken: token })); 
           dispatch(authActions.changeRole(role));
         }

@@ -33,7 +33,7 @@ const AdminDashboard = () => {
 
     if (loading) return <div className="bg-zinc-900 min-h-screen flex items-center justify-center"><Loader /></div>;
 
-    // Safety check to ensure data exists before destructuring
+    // Safety check to ensure data exists before 
     if (!data) return <div className="text-white text-center mt-10">No data available</div>;
 
     const { stats, chartData, recentOrders } = data;
@@ -42,7 +42,7 @@ const AdminDashboard = () => {
         <div className="bg-zinc-900 min-h-screen py-8 px-6 md:px-12 text-white">
             <h4 className="text-3xl md:text-5xl font-semibold text-zinc-500 mb-8">Admin Dashboard</h4>
 
-            {/* 1. Statistics Cards */}
+            {/* 1. Stat - cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
                 <StatCard title="Total Books" value={stats.totalBooks} icon={<PiBookOpenDuotone className="text-blue-400" />} />
                 <StatCard title="Total Users" value={stats.totalUsers} icon={<PiUsersDuotone className="text-green-400" />} />
@@ -52,7 +52,7 @@ const AdminDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* 2. Order Analytics Graph */}
+                {/* 2. Order Graph */}
                 <div className="lg:col-span-2 bg-zinc-800 p-6 rounded-lg border border-zinc-700">
                     <div className="flex items-center mb-6">
                         <PiTrendUpDuotone className="text-yellow-100 text-3xl mr-2" />

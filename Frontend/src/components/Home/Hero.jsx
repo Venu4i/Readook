@@ -16,16 +16,16 @@ const Hero = () => {
 
     useEffect(() => {
         const quoteInterval = setInterval(() => {
-            // Start fade out
+            
             setFade(false);
 
             setTimeout(() => {
-                // Change quote and fade back in
+                
                 setCurrentQuote((prev) => (prev + 1) % quotes.length);
                 setFade(true);
-            }, 500); // Wait for fade out to complete
+            }, 500); 
 
-        }, 3000); // Change every 3 seconds
+        }, 3000); 
 
         return () => clearInterval(quoteInterval);
     }, [quotes.length]);

@@ -152,12 +152,12 @@ const Complaints = () => {
 
                 </div>
 
-                {/* Seller ID */}
+                
                 <div className="w-full md:w-[15%] break-all text-[11px] text-indigo-400 font-mono">
                   {item.reportedSeller?._id}
                 </div>
 
-                {/* Reported By */}
+                
                 <div className="w-full md:w-[15%]">
 
                   <p className="text-sm">
@@ -170,12 +170,12 @@ const Complaints = () => {
 
                 </div>
 
-                {/* Reason */}
+                
                 <div className="w-full md:w-[27%] text-zinc-300 text-sm">
                   {item.reason}
                 </div>
 
-                {/* Status */}
+                
                 <div className="w-full md:w-[10%] flex justify-start md:justify-center">
 
                   <span
@@ -192,7 +192,7 @@ const Complaints = () => {
 
                 </div>
 
-                {/* Actions */}
+               
                 <div className="w-full md:w-[10%] flex flex-col gap-2 justify-start md:justify-center">
 
                     <button

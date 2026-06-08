@@ -17,7 +17,7 @@ const Sidebar = ({ data }) => {
                 </div>
             </div>
 
-            {/* User Links */}
+            
             {role === "user" && (
                 <div className="w-full">
                     <ul className="space-y-2 flex flex-row md:flex-col items-center justify-center w-full mt-4 gap-2 md:gap-0">
@@ -56,7 +56,7 @@ const Sidebar = ({ data }) => {
                 </div>
             )}
 
-            {/* Admin / Seller Links */}
+            
             {(role === "admin" || role === "seller") && (
                 <div className="w-full">
                    <ul className={`md:space-y-4 items-center justify-center w-full mt-4 md:flex-col md:gap-0 ${
@@ -97,7 +97,7 @@ const Sidebar = ({ data }) => {
                             Added Books
                         </NavLink>
 
-                        {/* Integrated Manage Sellers for Admin */}
+                        
                         {role === "admin" && (
                             <>
                                 <NavLink

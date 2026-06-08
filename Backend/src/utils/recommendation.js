@@ -8,10 +8,10 @@ const calculateSimilarity = (userVector, bookVector) => {
 };
 
 export const getRecommendedBooks = async (user) => {
-    // 1. Fetch books (excluding favorites)
+    // 1. Fetch books
     const allBooks = await Book.find({ _id: { $nin: user.favorites } });
     
-    // Get categories from the user's interest Map
+    //categories -> user's interest Map
     const categories = Array.from(user.interestProfile.categories.keys());
     
     if (categories.length === 0) {
@@ -20,7 +20,7 @@ export const getRecommendedBooks = async (user) => {
             .slice(0, 10);
     }
 
-    // 2. Build User Vector
+    // 2. User Vector
     const userVector = categories.map(cat => user.interestProfile.categories.get(cat) || 0);
 
     // 3. Score books
@@ -34,7 +34,7 @@ export const getRecommendedBooks = async (user) => {
         // for that specific category to ensure high interest = top position.
         const interestWeight = user.interestProfile.categories.get(book.category) || 0;
         
-        // Final Score: (Similarity * 10) + (Interest Weight * 2) + (Book Rating)
+            // Final Score: (Similarity * 10) + (Interest Weight * 2) + (Book Rating)
         const totalScore = (similarity * 10) + (interestWeight * 5) + (book.rating || 0);
 
         return {
@@ -43,7 +43,7 @@ export const getRecommendedBooks = async (user) => {
         };
     });
 
-    // 4. Sort by our custom score
+    // 4. Sort bASed on custom score
     return scoredBooks
         .sort((a, b) => b.score - a.score)
         .slice(0, 10);

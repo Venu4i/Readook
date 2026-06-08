@@ -34,15 +34,14 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Login failed');
 
-      // Extract user and token from your API response structure
       const { user, accessToken } = data.data;
 
-      // ✅ THE CRITICAL FIX: Store the token so App.jsx can find it on refresh
+      // refresh
       localStorage.setItem("token", accessToken); 
       localStorage.setItem("role", user.role);
       localStorage.setItem("id", user._id);
 
-      // ✅ Update Redux state
+      // Update Redux state
       dispatch(authActions.login({ accessToken }));
       dispatch(authActions.changeRole(user.role));
 

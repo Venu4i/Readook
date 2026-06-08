@@ -68,7 +68,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
 
-// Method to generate access token
+// to generate access token
 userSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         { _id: this._id, email: this.email, role: this.role },
@@ -77,7 +77,7 @@ userSchema.methods.generateAccessToken = function () {
     );
 };
 
-// Method to generate refresh token
+// to generate refresh token
 userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
         { _id: this._id },

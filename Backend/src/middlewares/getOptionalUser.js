@@ -7,7 +7,7 @@ export const getOptionalUser = asyncHandler(async (req, _, next) => {
     try {
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 
-        // If no token, just move to the controller as a guest
+        // If no token, move to the controller as a guest
         if (!token) {
             return next();
         }
@@ -23,7 +23,7 @@ export const getOptionalUser = asyncHandler(async (req, _, next) => {
         next();
     } catch (error) {
         // If token is expired or invalid, we still call next() 
-        // so the guest view (Cold Start) can still be seen.
+        // so the guest view can still be seen.
         console.log("Optional Auth Info: Invalid or expired token");
         next();
     }

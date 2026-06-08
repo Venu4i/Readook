@@ -101,7 +101,7 @@ const BookDetails = () => {
             <img src={Data.url} alt="Book Cover" className="h-[50vh] lg:h-[70vh]" />
           </div>
 
-          {/* Buttons for user (like & cart) */}
+          
           {isLoggedIn && role === "user" && (
             <div className="flex md:flex-col gap-3">
               <button
@@ -116,7 +116,7 @@ const BookDetails = () => {
             </div>
           )}
 
-          {/* Buttons for admin or seller (edit & delete) */}
+          
           {isLoggedIn && (role === "admin" || userId === Data.seller) && (
             <div className="flex md:flex-col gap-3">
               <Link to={`/editBook/${id}`}>

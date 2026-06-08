@@ -117,7 +117,7 @@ const Orders = () => {
 
           {/* Orders List */}
           {orders.map((items, i) => {
-            // ✅ LOGIC: Fallback to snapshot if book is deleted
+            
             const bookData = items.book || items.bookSnapshot || {};
             const isDeleted = !items.book;
 
@@ -129,7 +129,7 @@ const Orders = () => {
                 <div className="w-[3%] text-center pt-1 text-zinc-500">{i + 1}</div>
 
                 <div className="w-[22%] flex flex-col items-center text-center">
-                  {/* ✅ UI FIX: Remove Link if book is deleted */}
+                  
                   {!isDeleted ? (
                     <Link
                       to={`/get-book-details/${items.book._id}`}
@@ -211,7 +211,7 @@ const Orders = () => {
 
                 <div className="w-[9%] text-center pt-1 font-mono">₹{bookData.price}</div>
 
-                {/* Status and Verification Code Column */}
+                
                 <div className="w-[16%] text-center flex flex-col items-center pt-1">
                   <span className={`px-2 py-1 rounded text-xs uppercase tracking-wider font-bold ${
                     items.status === "Order Placed" ? "text-yellow-500 bg-yellow-500/10" :

@@ -8,7 +8,7 @@ import Loader from "../components/Loader/loader.jsx"
 import axiosInstance from "../store/axios.js";
 
 const Profile = () => {
-    // const isLoggedIn = useSelector();
+  
     const [Profile, setProfile] =  useState();
     const headers ={
         id: localStorage.getItem('id'),

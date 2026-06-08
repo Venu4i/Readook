@@ -19,7 +19,7 @@ const Favourites = () => {
       });
       console.log (response.data.data);
 
-      // Get the book data from each favourite
+      
       const books = response.data.data;
       setFavBooks(books);
     } catch (error) {
@@ -57,7 +57,7 @@ const Favourites = () => {
               <BookCard
                 data={item}
                 favourite={true}
-                onFavouriteRemoved={fetchFavourites} // Pass the refetch function
+                onFavouriteRemoved={fetchFavourites} 
               />
             </div>
           ))}

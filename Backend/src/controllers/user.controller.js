@@ -10,7 +10,7 @@ import { sendEmail } from "../utils/email.js";
 
 const generateAccessAndRefreshTokens = async (userId) =>{
     try {
-        console.log("shuru to hua")
+        //console.log("shuru to hua")
         const user = await User.findById(userId)
         if(!user){
             console.log("user ni mila yrr")
@@ -29,7 +29,7 @@ const generateAccessAndRefreshTokens = async (userId) =>{
 }
 
 const registerUser = asyncHandler(async (req, res) => {
-    console.log("📥 Incoming register request:", req.body); 
+    //console.log("📥 Incoming register request:", req.body); 
 
     const { username, email, password, role, otp } = req.body;
 
@@ -203,10 +203,10 @@ const refreshAccessToken = asyncHandler (async (req, res) => {
     
         const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
 
-        console.log({
-        accessToken,
-        refreshToken
-        });
+        // console.log({
+        // accessToken,
+        // refreshToken
+        // });
     
         return res
         .status(200)

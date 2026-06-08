@@ -20,14 +20,14 @@ useEffect(() => {
       try {
         const token = localStorage.getItem("token");
         
-        // Define configuration. If token exists, add it to headers.
+        //If token exists, add it to headers.
         const config = token 
           ? { headers: { Authorization: `Bearer ${token}` } } 
           : {};
 
         const resp = await axiosInstance.get(
           "http://localhost:3000/api/v1/book/get-all-books",
-          config // Pass the config here
+          config 
         );
 
         setData(resp.data.data);
@@ -109,7 +109,7 @@ useEffect(() => {
         </p>
       </div>
 
-      {/* Search and Filter Controls */}
+      
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <input
           type="text"
@@ -128,7 +128,7 @@ useEffect(() => {
           <option value="Hindi">Hindi</option>
           <option value="French">French</option>
           <option value="Spanish">Spanish</option>
-          {/* Add more as needed */}
+          
         </select>
       </div>
 

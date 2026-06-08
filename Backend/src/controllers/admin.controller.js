@@ -98,8 +98,8 @@ const getAllSellers = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Unauthorized: Only administrators can check sellers");
     }
 
-    // We only fetch users whose role is "seller"
-    // We select specific fields to keep the response light
+    // fetch users whose role is "seller"
+    // select specific fields to keep the response light
     const sellers = await User.find({ role: "seller" })
         .select("-password -refreshToken -cart -favorites -interestProfile")
         .sort({ createdAt: -1 });
@@ -123,11 +123,6 @@ const ToggleBlacklist = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(404, "User not found");
     }
-
-    // Security check: Only sellers should be blacklisted via this route
-    // if (user.role !== "seller") {
-    //     throw new ApiError(400, "Only users with the 'seller' role can be blacklisted");
-    // }
 
     // Toggle the boolean value
     user.isBlacklisted = !user.isBlacklisted;
@@ -153,19 +148,18 @@ const ToggleBlacklist = asyncHandler(async (req, res) => {
 const deleteSellerBooks = asyncHandler(async (req, res) => {
     const { sellerId } = req.params;
 
-    // 1. ADMIN CHECK: Ensure the person making the request is an Admin
-    // req.user is populated by your verifyJWT middleware
+    // 1. ADMIN CHECK
     if (req.user?.role !== "admin") {
         throw new ApiError(403, "Unauthorized: Only administrators can delete a seller's inventory");
     }
 
-    // 2. VERIFY TARGET: Check if the sellerId belongs to a real seller
+    // 2. VERIFY TARGET
     const seller = await User.findOne({ _id: sellerId, role: "seller" });
     if (!seller) {
         throw new ApiError(404, "Seller not found or the target user is not a seller");
     }
 
-    // 3. EXECUTE: Delete all books where the 'seller' field matches sellerId
+    // 3. EXECUTE
     const deleteResult = await Book.deleteMany({ seller: sellerId });
 
     return res.status(200).json(

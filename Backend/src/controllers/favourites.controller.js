@@ -32,10 +32,9 @@ const addToFavourites = asyncHandler(async (req, res) => {
 
   try {
     user.favorites.push(bookId);
-  // Normalize the category name to "Title Case" or "lowercase" before saving
+  // Normalize the category name
 const categoryKey = book.category.trim(); // "Self-Help"
 
-// Always check for existing variations or just force one format
 const currentWeight = user.interestProfile.categories.get(categoryKey) || 0;
 user.interestProfile.categories.set(categoryKey, currentWeight + 2);
 

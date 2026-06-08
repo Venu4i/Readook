@@ -28,7 +28,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="relative z-[100]"> {/* Wrapper to ensure Navbar stays above Sidebar */}
+    <div className="relative z-[100]"> {/* Wrapper - Navbar stays above Sidebar */}
       <nav className="w-full flex bg-zinc-900 px-6 py-4 text-white items-center justify-between border-b border-zinc-800">
         <NavLink to="/" className="flex gap-4 items-center border-none">
           <img className="h-10" src="./logo.png" alt="logo" />
@@ -53,7 +53,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Desktop Auth Buttons */}
+          {/* Desktop */}
           <div className="hidden md:flex gap-4 items-center">
             {!isLoggedIn ? (
               <>
@@ -71,7 +71,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Toggle Button */}
+          {/* Mobile */}
           <button
             className="text-white text-3xl md:hidden focus:outline-none"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -81,7 +81,7 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu */}
       {menuOpen && (
         <div className="fixed inset-0 top-[72px] bg-zinc-950/95 backdrop-blur-sm w-full flex flex-col items-center px-6 py-10 space-y-8 md:hidden z-[100]">
           {links.map((item, index) => (

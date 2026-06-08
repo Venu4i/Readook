@@ -36,7 +36,7 @@ const orderSchema = new Schema({
     deliveryCode: {
         type: String,
         required: true
-        // generate this during order placement
+        
     }
 },
 {

@@ -20,7 +20,6 @@ const EditBook = () => {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   };
 
-  // Fetch book data to prefill form
   useEffect(() => {
     const fetchBook = async () => {
       try {
@@ -52,7 +51,7 @@ const EditBook = () => {
         headers,
       });
       alert(res.data.message);
-      navigate("/books"); // or wherever you want to go after update
+      navigate("/books");
     } catch (err) {
       console.error("Failed to update book", err);
       alert("Failed to update book. Only admins can perform this action.");

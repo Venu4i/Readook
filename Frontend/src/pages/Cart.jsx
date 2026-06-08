@@ -24,7 +24,7 @@ const Cart = () => {
       });
       console.log(response.data.data);
 
-      // Get the book data from each favourite
+      
       const books = response.data.data;
       setCart(books);
     } catch (error) {
@@ -40,7 +40,7 @@ const Cart = () => {
     if(cart && cart.length > 0) {
      let total= 0;
         cart.forEach((item) => {
-            total += item.book.price * (item.quantity || 1); // Assuming quantity is available
+            total += item.book.price * (item.quantity || 1); 
         });
         console.log("Total Cart Value: ", total);
         setTotal(total);
@@ -121,7 +121,7 @@ const Cart = () => {
 
           </div>
 
-          {/* ✅ Wrap Place Order section only when cart is not empty */}
+          
           <div className="bg-zinc-800 p-4 rounded mt-8 flex flex-col md:flex-row items-center justify-between">
             <div className="flex flex-col md:flex-row mb-4 md:mb-0">
               <p className="text-white text-2xl font-semibold">Total Cart Value: </p>

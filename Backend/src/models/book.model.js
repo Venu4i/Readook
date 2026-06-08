@@ -53,7 +53,7 @@ const bookSchema = new Schema ({
     },
     seller: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // assuming admin is stored in the same User model
+    ref: 'User',
     required: true
   },
 },
