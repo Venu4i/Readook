@@ -8,7 +8,7 @@ const app = express();
 const _dirname = path.resolve();
 
 app.use(cors({
-    origin: "https://readook.onrender.com" ,
+    origin: process.env.CORS_ORIGIN || "https://readook.onrender.com" ,
     credentials: true
 }))
 
