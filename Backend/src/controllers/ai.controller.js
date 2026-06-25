@@ -100,7 +100,7 @@ const discoverBooks = async (req, res) => {
                 "Please login to use AI Discovery"
             );
         }
-        console.log("⚠️ Legacy  OLD Discovery HIT");
+        //console.log("OLD Discovery HIT");
         const { query } = req.body;
 
         if (!query?.trim()) {
@@ -282,7 +282,7 @@ const SemanticDiscovery = asyncHandler(async (req, res) => {
         ...fallbackBooks
     ];
 
-    console.log("🔥 SemanticDiscovery HIT");
+    //console.log("SemanticDiscovery HIT");
 
     return res.status(200).json(
         new ApiResponse(
