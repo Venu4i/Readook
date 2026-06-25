@@ -3,7 +3,8 @@ import { Router } from "express";
 import {
     generateDescription,
     generateKeywords,
-    discoverBooks
+    discoverBooks, 
+    SemanticDiscovery
 }
 from "../controllers/ai.controller.js";
 
@@ -27,6 +28,11 @@ router.route("/generateKeywords").post(
 router.route("/discoverBooks").post(
     verifyJWT,
     discoverBooks
+);
+
+router.route("/semanticDiscovery").post(
+    verifyJWT,
+    SemanticDiscovery
 );
 
 export default router;

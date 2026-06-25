@@ -6,6 +6,8 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import {asyncHandler} from '../utils/asyncHandler.js';
 import { getRecommendedBooks } from '../utils/recommendation.js';
 import { generateKeywords } from "./ai.controller.js";
+// import { Document } from "@langchain/core/documents"; 
+import {addBookVector,  updateBookVector, deleteBookVector} from "../utils/vectors.js";
 
 const addBook = asyncHandler( async(req,res) =>{
     //get book details
@@ -37,6 +39,7 @@ const addBook = asyncHandler( async(req,res) =>{
             }
         )
         await book.save();
+        await addBookVector(book);
         res.status(200).json( new ApiResponse(200, book, "book added successfully"))
     }
      catch (error) {
@@ -72,7 +75,8 @@ const updateBook = asyncHandler (async (req, res) => {
                     category: req.body.category,
                     quantity: req.body.quantity,
                     keywords: keywords
-        })
+        }, {new : true})
+        await updateBookVector(updatedbook);
         res.status(200).json(new ApiResponse (200, updatedbook, "Book details updated successfully"))
     } catch (error) {
         throw new ApiError (500, error? error : "Internal Server error")
@@ -93,6 +97,7 @@ const deleteBook = asyncHandler (async (req,res) => {
         }
         //console.log("User found: ",user)
         
+        await deleteBookVector(BookId);
         await Book.findByIdAndDelete(BookId)
         res.status(200).json(new ApiResponse (200, "Book deleted successfully", targetBook))
 

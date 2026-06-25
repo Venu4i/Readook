@@ -3,6 +3,7 @@ import {Book} from "../models/book.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { semanticSearch } from "../utils/vectors.js";
 
 const generateDescription = asyncHandler(async (req, res) => {
 
@@ -99,7 +100,7 @@ const discoverBooks = async (req, res) => {
                 "Please login to use AI Discovery"
             );
         }
-
+        console.log("⚠️ Legacy  OLD Discovery HIT");
         const { query } = req.body;
 
         if (!query?.trim()) {
@@ -244,7 +245,56 @@ Return the response, in which keywords must be able to find books around the que
     }
 };
 
+const SemanticDiscovery = asyncHandler(async (req, res) => {
+    const { query } = req.body;
+
+    if (!query) {
+        throw new ApiError(400, "Query required");
+    }
+
+    
+    const docs = await semanticSearch(query, 25);
+
+    const ids = docs.map(
+        doc => doc.metadata.bookId
+    );
+
+    let semanticBooks = await Book.find({
+        _id: { $in: ids }
+    });
+
+
+    const remainingLimit = Math.max(0, 50 - semanticBooks.length);
+
+    let fallbackBooks = [];
+
+    if (remainingLimit > 0) {
+        fallbackBooks = await Book.find({
+            _id: { $nin: ids }
+        })
+        .sort({ rating: -1, createdAt: -1 }) // optional ranking
+        .limit(remainingLimit);
+    }
+
+
+    const finalBooks = [
+        ...semanticBooks,
+        ...fallbackBooks
+    ];
+
+    console.log("🔥 SemanticDiscovery HIT");
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            finalBooks,
+            "Semantic + fallback books fetched successfully"
+        )
+    );
+});
+
 export { generateDescription ,
         generateKeywords,
-        discoverBooks
+        discoverBooks,
+        SemanticDiscovery
 };

@@ -29,7 +29,7 @@ useEffect(() => {
           "https://readook.onrender.com/api/v1/book/get-all-books",
           config 
         );
-
+        //console.log("Fetched Books:", resp.data.data);
         setData(resp.data.data);
       } catch (error) {
         console.log("Error fetching books:", error);
@@ -59,12 +59,12 @@ useEffect(() => {
       setAiLoading(true);
 
       const res = await axiosInstance.post(
-        "/ai/discoverBooks",
+        "/ai/semanticDiscovery",
         {
           query: aiQuery,
         }
       );
-      //console.log("AI Discovery Response:", res.data);
+      console.log("AI Discovery Response:", res.data);
       setData(res.data.books);
 
     } catch (error) {
