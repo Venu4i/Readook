@@ -41,7 +41,8 @@ useEffect(() => {
   }, []);
 
   // Filtering logic
-  const filteredBooks = Data.filter((book) => {
+  console.log("Data state:", Data);
+  const filteredBooks = (Data ?? []).filter((book) => {
     const matchesTitle = book.title
       .toLowerCase()
       .includes(searchTitle.toLowerCase());
@@ -65,7 +66,7 @@ useEffect(() => {
         }
       );
       console.log("AI Discovery Response:", res.data);
-      setData(res.data.books);
+      setData(res.data.data || []);
 
     } catch (error) {
       console.error(error);
