@@ -263,6 +263,14 @@ const SemanticDiscovery = asyncHandler(async (req, res) => {
         _id: { $in: ids }
     });
 
+    const bookMap = new Map(
+        semanticBooks.map(book => [book._id.toString(), book])
+        );
+
+        semanticBooks = ids
+            .map(id => bookMap.get(id))
+            .filter(Boolean);
+
 
     const remainingLimit = Math.max(0, 50 - semanticBooks.length);
 
