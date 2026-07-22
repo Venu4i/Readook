@@ -2,6 +2,7 @@ import { Document } from "@langchain/core/documents";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { QdrantVectorStore } from "@langchain/qdrant";
 import { QdrantClient } from "@qdrant/js-client-rest";
+import { COLLECTION_NAME } from "../constants.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -30,7 +31,7 @@ export const initVectorStore = async () => {
             {
                 url: process.env.QDRANT_URL,
                 apiKey: process.env.QDRANT_API_KEY,
-                collectionName: "Books"
+                collectionName: COLLECTION_NAME
             }
         );
 
@@ -103,7 +104,7 @@ export const updateBookVector = async (book) => {
 export const deleteBookVector = async (bookId) => {
 
     await qdrantClient.delete(
-        "books",
+        COLLECTION_NAME,
         {
             filter: {
                 must: [
